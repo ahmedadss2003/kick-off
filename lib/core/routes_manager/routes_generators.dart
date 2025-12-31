@@ -8,9 +8,7 @@ class RouteGenerator {
   static Route<dynamic> getRoute(RouteSettings settings) {
     switch (settings.name) {
       case Routes.main:
-        return MaterialPageRoute(
-          builder: (_) => const MyHomePage(title: 'test'),
-        );
+        return MaterialPageRoute(builder: (_) => const HomePage());
 
       default:
         return unDefinedRoute();
