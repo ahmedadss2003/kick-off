@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/features/auth_screen/presentation/ui/login_view_view.dart';
 
 import 'package:kickoff/features/onboarding/custom_button.dart';
 
@@ -38,11 +39,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> completeOnboarding() async {
-    // Navigate to home
     if (!mounted) return;
     Navigator.of(
       context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const LogginView()));
   }
 
   @override
@@ -87,14 +87,3 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 }
 
 // Placeholder HomePage
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
-      body: const Center(child: Text('Welcome to the app!')),
-    );
-  }
-}
