@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/routes_manager/routes_generators.dart';
 import 'package:kickoff/features/onboarding/onboarding_screen.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:kickoff/features/splash_screen/spalsh_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,45 +24,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: const OnboardingScreen(),
+        home: SplashScreen(),
       ),
     );
   }
 }
-
-// class SplashScreen extends StatefulWidget {
-//   const SplashScreen({super.key});
-
-//   @override
-//   State<SplashScreen> createState() => _SplashScreenState();
-// }
-
-// class _SplashScreenState extends State<SplashScreen> {
-//   @override
-//   void initState() {
-//     super.initState();
-//     _checkOnboarding();
-//   }
-
-//   Future<void> _checkOnboarding() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
-
-//     if (!mounted) return;
-
-//     if (onboardingCompleted) {
-//       Navigator.of(
-//         context,
-//       ).pushReplacement(MaterialPageRoute(builder: (_) => const LogginView()));
-//     } else {
-//       Navigator.of(context).pushReplacement(
-//         MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-//       );
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Scaffold(body: Center(child: CircularProgressIndicator()));
-//   }
-// }

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class OnboardingPage extends StatelessWidget {
   final String title;
   final String description;
-  final IconData icon;
+  final String image;
 
   const OnboardingPage({
     super.key,
     required this.title,
     required this.description,
-    required this.icon,
+    required this.image,
   });
 
   @override
@@ -19,11 +19,14 @@ class OnboardingPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 100, color: Theme.of(context).primaryColor),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16.0),
+            child: Image.asset(image),
+          ),
           const SizedBox(height: 40),
           Text(
             title,
-            style: Theme.of(context).textTheme.headlineMedium,
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),

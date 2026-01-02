@@ -60,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 return OnboardingPage(
                   title: onboardingPages[index]['title']!,
                   description: onboardingPages[index]['description']!,
-                  icon: onboardingPages[index]['icon'] as IconData,
+                  image: onboardingPages[index]['image'],
                 );
               },
             ),
