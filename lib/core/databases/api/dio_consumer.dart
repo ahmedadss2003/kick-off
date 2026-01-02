@@ -19,11 +19,12 @@ class DioConsumer extends ApiConsumer {
     bool isFormData = false,
   }) async {
     try {
-      dio.post(
+      var res = await dio.post(
         path,
         data: isFormData ? FormData.fromMap(data) : data,
         queryParameters: queryParameters,
       );
+      return res.data;
     } on DioException catch (e) {
       handleDioException(e);
     }

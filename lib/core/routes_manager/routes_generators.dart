@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kickoff/main.dart';
 
@@ -8,6 +7,8 @@ class RouteGenerator {
   static Route<dynamic> getRoute(RouteSettings settings) {
     switch (settings.name) {
       case Routes.main:
+        return MaterialPageRoute(builder: (_) => const HomePage());
+      case Routes.home:
         return MaterialPageRoute(builder: (_) => const HomePage());
 
       default:
