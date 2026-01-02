@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/features/auth_screen/presentation/ui/login_view_view.dart';
 import 'package:kickoff/features/onboarding/onboarding_data.dart';
 import 'package:kickoff/features/onboarding/onboarding_page.dart';
 import 'package:kickoff/features/onboarding/onboarding_indicators.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -44,7 +44,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (!mounted) return;
     Navigator.of(
       context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const LogginView()));
   }
 
   @override
@@ -67,10 +67,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Positioned(
             top: 50,
             right: 16,
-            child: TextButton(
-              onPressed: _skip,
-              child: const Text('Skip'),
-            ),
+            child: TextButton(onPressed: _skip, child: const Text('Skip')),
           ),
           Positioned(
             bottom: 50,
@@ -87,7 +84,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ElevatedButton(
                   onPressed: _nextPage,
                   child: Text(
-                    _currentPage == onboardingPages.length - 1 ? 'Get Started' : 'Next',
+                    _currentPage == onboardingPages.length - 1
+                        ? 'Get Started'
+                        : 'Next',
                   ),
                 ),
               ],
@@ -98,20 +97,3 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
-
-// Placeholder HomePage
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
-      body: const Center(child: Text('Welcome to the app!')),
-    );
-  }
-}
-
-
-
-
