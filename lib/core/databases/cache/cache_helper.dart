@@ -10,8 +10,9 @@ class CacheHelper {
 
   /// Save data to SharedPreferences
   static Future<void> setData<T>(String key, T value) async {
-    if (_preferences == null)
+    if (_preferences == null) {
       throw Exception("SharedPreferences not initialized");
+    }
 
     if (value is String) {
       await _preferences!.setString(key, value);
@@ -30,8 +31,9 @@ class CacheHelper {
 
   /// Retrieve data from SharedPreferences
   static T? getData<T>(String key) {
-    if (_preferences == null)
+    if (_preferences == null) {
       throw Exception("SharedPreferences not initialized");
+    }
 
     if (T == String) {
       return _preferences!.getString(key) as T?;
@@ -50,8 +52,9 @@ class CacheHelper {
 
   /// Remove data from SharedPreferences
   static Future<void> removeData(String key) async {
-    if (_preferences == null)
+    if (_preferences == null) {
       throw Exception("SharedPreferences not initialized");
+    }
     await _preferences!.remove(key);
   }
 }
