@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:kickoff/core/databases/api/api_consumer.dart';
 import 'package:kickoff/core/databases/api/end_points.dart';
@@ -8,6 +10,20 @@ class DioConsumer extends ApiConsumer {
 
   DioConsumer({required this.dio}) {
     dio.options.baseUrl = EndPoints.baserUrl;
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onResponse: (response, handler) {
+          log('Status Code: ${response.statusCode}');
+          log('Response Data: ${response.data}');
+          return handler.next(response);
+        },
+        onError: (error, handler) {
+          log('Error: ${error.message}');
+          log('Error Response: ${error.response?.data}');
+          return handler.next(error);
+        },
+      ),
+    );
   }
 
   //!POST
