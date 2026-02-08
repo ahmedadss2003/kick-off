@@ -14,7 +14,7 @@ class AuthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const BuildHeadder(),
+        // const BuildHeadder(),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(

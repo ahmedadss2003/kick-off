@@ -7,7 +7,7 @@ class RegisterView extends StatelessWidget {
   static const routeName = '/register';
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(child: RegisterViewBody()),
     );
