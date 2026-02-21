@@ -5,4 +5,5 @@ class Routes {
   static const String onboarding = "/onboarding";
   static const String home = "/home";
   static const String register = RegisterView.routeName;
+  static const String stadiums = "/stadiums";
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
+import 'package:kickoff/core/routes_manager/routes.dart';
 import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/core/theming/styles.dart';
 import 'package:kickoff/features/auth_screen/data/models/login_requsest.dart';
@@ -42,10 +43,7 @@ class LoginViewBody extends StatelessWidget {
             BlocConsumer<LoginCubit, LoginState>(
               listener: (context, state) {
                 if (state is LoginSuccess) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TestFile()),
-                  );
+                  Navigator.pushReplacementNamed(context, Routes.stadiums);
                 }
                 if (state is LoginFailure) {
                   ScaffoldMessenger.of(
