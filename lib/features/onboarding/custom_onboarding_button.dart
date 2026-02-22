@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/core/theming/colors.dart';
 
 class CustomBtn extends StatelessWidget {
   const CustomBtn({super.key, required this.text, this.onPressed});
@@ -15,7 +16,7 @@ class CustomBtn extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: const Color.fromARGB(255, 3, 148, 78),
           padding: const EdgeInsets.symmetric(vertical: 16),
         ),
         child: Text(
