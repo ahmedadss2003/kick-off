@@ -11,6 +11,7 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case Routes.register:
         return MaterialPageRoute(builder: (_) => const RegisterView());
+
       default:
         return unDefinedRoute();
     }

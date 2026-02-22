@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
+import 'package:kickoff/core/routes_manager/routes.dart';
 import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/core/theming/styles.dart';
 import 'package:kickoff/features/auth_screen/data/models/login_requsest.dart';
@@ -47,6 +48,8 @@ class LoginViewBody extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (context) => const Home()),
                   );
+
+
                 }
                 if (state is LoginFailure) {
                   ScaffoldMessenger.of(
