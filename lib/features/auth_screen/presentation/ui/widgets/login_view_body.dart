@@ -14,8 +14,9 @@ import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_auth
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_passward.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_textform.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/dont_have_account_widget.dart';
-import 'package:kickoff/features/test/testfile.dart';
+import 'package:kickoff/features/home/home.dart';
 
+// ignore: must_be_immutable
 class LoginViewBody extends StatelessWidget {
   LoginViewBody({super.key});
 
@@ -44,7 +45,7 @@ class LoginViewBody extends StatelessWidget {
                 if (state is LoginSuccess) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const TestFile()),
+                    MaterialPageRoute(builder: (context) => const Home()),
                   );
                 }
                 if (state is LoginFailure) {
@@ -131,33 +132,6 @@ class LoginViewBody extends StatelessWidget {
                         SizedBox(height: 16.h),
                         DontHaveAccountWidget(),
                         SizedBox(height: 18.h),
-                        // Row(
-                        //   children: [
-                        //     const Expanded(child: Divider()),
-                        //     Padding(
-                        //       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        //       child: Text(
-                        //         'OR CONTINUE WITH',
-                        //         style: TextStyles.font12GrayMedium.copyWith(
-                        //           letterSpacing: 1.2,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //     const Expanded(child: Divider()),
-                        //   ],
-                        // ),
-                        // SizedBox(height: 32.h),
-                        // SocialLoginButton(
-                        //   onPressed: () {
-                        //     // Perform Google login
-                        //   },
-                        //   label: 'Continue with Google',
-                        //   icon: Image.network(
-                        //     'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png',
-                        //     height: 24.h,
-                        //   ),
-                        // ),
-                        // SizedBox(height: 32.h),
                       ],
                     ),
                   ),

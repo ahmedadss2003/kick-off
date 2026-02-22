@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/core/databases/cache/cache_helper.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/login_view_view.dart';
 
-import 'package:kickoff/features/onboarding/custom_button.dart';
+import 'package:kickoff/features/onboarding/custom_onboarding_button.dart';
 
 import 'onboarding_data.dart';
 import 'onboarding_page.dart';
@@ -38,11 +39,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     completeOnboarding();
   }
 
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
   Future<void> completeOnboarding() async {
+    await CacheHelper.setNotFirstTime();
     if (!mounted) return;
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const LogginView()));
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 600),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const LogginView(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(scale: animation, child: child),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -68,15 +86,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Flexible(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: CustomBtn(
-                text: currentPage == onboardingPages.length - 1
-                    ? 'Get Started'
-                    : 'Next',
-                onPressed: () {
-                  currentPage == onboardingPages.length - 1
-                      ? completeOnboarding()
-                      : nextPage();
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(
+                    scale: animation,
+                    child: FadeTransition(opacity: animation, child: child),
+                  );
                 },
+                child: CustomBtn(
+                  key: ValueKey(currentPage),
+                  text: currentPage == onboardingPages.length - 1
+                      ? 'Get Started'
+                      : 'Next',
+                  onPressed: () {
+                    currentPage == onboardingPages.length - 1
+                        ? completeOnboarding()
+                        : nextPage();
+                  },
+                ),
               ),
             ),
           ),

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kickoff/core/databases/cache/cache_helper.dart';
 import 'package:kickoff/core/routes_manager/routes_generators.dart';
-import 'package:kickoff/features/onboarding/onboarding_screen.dart';
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:kickoff/features/splash_screen/spalsh_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await CacheHelper.init();
   await ScreenUtil.ensureScreenSize();
   runApp(const MyApp());
 }

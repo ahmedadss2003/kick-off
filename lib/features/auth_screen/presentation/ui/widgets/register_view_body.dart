@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:kickoff/core/databases/api/api_consumer.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
 import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/core/theming/styles.dart';
@@ -15,8 +14,6 @@ import 'package:kickoff/features/auth_screen/presentation/ui/widgets/auth_header
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_auth_button.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_passward.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_textform.dart';
-import 'package:kickoff/features/auth_screen/presentation/ui/widgets/labeled_auth_text_field.dart';
-import 'package:kickoff/features/test/testfile.dart';
 
 class RegisterViewBody extends StatefulWidget {
   const RegisterViewBody({super.key});

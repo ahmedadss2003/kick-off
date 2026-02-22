@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/core/databases/cache/cache_helper.dart';
+import 'package:kickoff/features/home/home.dart';
 import 'package:kickoff/features/onboarding/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -53,9 +55,14 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-  void _navigateToHome() {
+  Future<void> _navigateToHome() async {
+    final isFirst = await CacheHelper.isFirstTime();
+    if (!mounted) return;
+
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+      MaterialPageRoute(
+        builder: (context) => isFirst ? const OnboardingScreen() : const Home(),
+      ),
     );
   }
 
@@ -83,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Image.asset('assets/images/appp_logo.png'),
+                  child: Image.asset('assets/images/app_logo2.png'),
                 ),
               ),
             ),
