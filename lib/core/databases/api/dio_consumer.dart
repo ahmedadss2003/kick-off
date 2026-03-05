@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:kickoff/core/databases/api/api_consumer.dart';
 import 'package:kickoff/core/databases/api/end_points.dart';
 import 'package:kickoff/core/errors/expentions.dart';
-import 'package:kickoff/core/utils/app_session.dart';
 
 class DioConsumer extends ApiConsumer {
   final Dio dio;
@@ -13,13 +12,10 @@ class DioConsumer extends ApiConsumer {
     dio.options.baseUrl = EndPoints.baserUrl;
     dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
-          final token = AppSession.token;
-          if (token != null && token.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
-          options.headers['Accept'] = 'application/json';
-          return handler.next(options);
+        onResponse: (response, handler) {
+          log('Status Code: ${response.statusCode}');
+          log('Response Data: ${response.data}');
+          return handler.next(response);
         },
         onError: (error, handler) {
           log('Error: ${error.message}');
