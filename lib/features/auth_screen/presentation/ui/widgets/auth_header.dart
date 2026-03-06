@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/core/theming/styles.dart';
-import 'package:kickoff/features/auth_screen/presentation/ui/widgets/build_headder.dart';
 
 class AuthHeader extends StatelessWidget {
   final String title;
