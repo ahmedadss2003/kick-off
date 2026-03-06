@@ -15,21 +15,23 @@ import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_auth
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_passward.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_textform.dart';
 
-class RegisterViewBody extends StatefulWidget {
-  const RegisterViewBody({super.key});
+class RegisterViewBody extends StatelessWidget {
+  RegisterViewBody({super.key});
 
-  @override
-  State<RegisterViewBody> createState() => _RegisterViewBodyState();
-}
-
-class _RegisterViewBodyState extends State<RegisterViewBody> {
   bool isPasswordObscure = true;
+
   bool isConfirmPasswordObscure = true;
+
   final passwordController = TextEditingController();
+
   final firstNmaeController = TextEditingController();
+
   final lastNameController = TextEditingController();
+
   final emailController = TextEditingController();
+
   final confirmPasswordController = TextEditingController();
+
   final phoneController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();

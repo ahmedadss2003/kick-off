@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
+import 'package:kickoff/core/databases/cache/cache_helper.dart';
 import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/core/theming/styles.dart';
+import 'package:kickoff/core/utils/app_session.dart';
+import 'package:kickoff/core/utils/custom_snackbar.dart';
 import 'package:kickoff/features/auth_screen/data/models/login_requsest.dart';
 import 'package:kickoff/features/auth_screen/data/repositories/auth_repository.dart';
 import 'package:kickoff/features/auth_screen/presentation/manager/login/login_cubit.dart';
@@ -14,7 +17,7 @@ import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_auth
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_passward.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_textform.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/dont_have_account_widget.dart';
-import 'package:kickoff/features/home/home.dart';
+import 'package:kickoff/features/home/home_view.dart';
 
 // ignore: must_be_immutable
 class LoginViewBody extends StatelessWidget {
@@ -43,15 +46,22 @@ class LoginViewBody extends StatelessWidget {
             BlocConsumer<LoginCubit, LoginState>(
               listener: (context, state) {
                 if (state is LoginSuccess) {
+                  if (state.user.token != null) {
+                    AppSession.token = state.user.token;
+                    CacheHelper.setData('userToken', state.user.token!);
+                  }
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const Home()),
+                    MaterialPageRoute(builder: (context) => const HomeView()),
                   );
                 }
                 if (state is LoginFailure) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(state.error)));
+                  showCustomSnackBar(
+                    context: context,
+                    message: state.error,
+                    color: Colors.red,
+                  );
+                  
                 }
               },
               builder: (context, state) {

@@ -1,0 +1,208 @@
+import 'package:flutter/material.dart';
+import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+/// White info card shown on the details screen.
+/// Displays stadium name and star rating.
+class StadiumInfoCard extends StatelessWidget {
+  final StadiumModel stadium;
+
+  const StadiumInfoCard({super.key, required this.stadium});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.07),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // ── Name ───────────────────────────────────────────────────
+          Text(
+            stadium.name ?? 'ملعب',
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // ── Rating row ─────────────────────────────────────────────
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '${stadium.rating?.toInt() ?? 0} / 10',
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color(0xFF424242),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 8),
+              ...List.generate(5, (i) {
+                final filled = i < ((stadium.rating ?? 0) / 2).round();
+                return Icon(
+                  filled ? Icons.star : Icons.star_border,
+                  color: const Color(0xFFFFC107),
+                  size: 20,
+                );
+              }),
+            ],
+          ),
+          if (stadium.distanceKm != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.place,
+                  size: 18,
+                  color: Color(0xFF757575),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '${stadium.distanceKm!.toStringAsFixed(1)} كم عن موقعك',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF757575),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+
+          const SizedBox(height: 16),
+          const Divider(height: 1, color: Color(0xFFEEEEEE)),
+          const SizedBox(height: 16),
+
+          // ── Action buttons row ─────────────────────────────────────
+          Row(
+            children: [
+              _ActionButton(
+                icon: Icons.location_on,
+                label: stadium.distanceKm != null
+                    ? 'الموقع\n${stadium.distanceKm!.toStringAsFixed(1)} كم عنك'
+                    : 'افتح\nالموقع',
+                backgroundColor: const Color(0xFFFFEBEE),
+                iconColor: const Color(0xFFE53935),
+                onTap: () => _openLocation(context, stadium),
+              ),
+              const SizedBox(width: 10),
+              _ActionButton(
+                icon: Icons.phone,
+                label: 'اتصال\n${stadium.phone ?? '...'}',
+                backgroundColor: const Color(0xFFE8F5E9),
+                iconColor: const Color(0xFF2E7D32),
+                onTap: () {},
+              ),
+              const SizedBox(width: 10),
+              _ActionButton(
+                icon: Icons.group,
+                label: 'عدد اللاعبين\n${stadium.size ?? '–'}',
+                backgroundColor: const Color(0xFFE3F2FD),
+                iconColor: const Color(0xFF1565C0),
+                onTap: () {},
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openLocation(BuildContext context, StadiumModel stadium) async {
+    final lat = stadium.latitude;
+    final lng = stadium.longitude;
+
+    if (lat == null || lng == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('الموقع غير متاح لهذا الملعب')),
+      );
+      return;
+    }
+
+    final uri = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
+
+    try {
+      final canLaunch = await canLaunchUrl(uri);
+      if (!canLaunch) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('لا يمكن فتح تطبيق الخرائط')),
+        );
+        return;
+      }
+
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('حدث خطأ أثناء فتح الموقع')),
+      );
+    }
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color backgroundColor;
+  final Color iconColor;
+  final VoidCallback onTap;
+
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.backgroundColor,
+    required this.iconColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: iconColor, size: 24),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: Color(0xFF424242),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kickoff/core/databases/cache/cache_helper.dart';
-import 'package:kickoff/features/home/home.dart';
+import 'package:kickoff/core/utils/app_session.dart';
+import 'package:kickoff/features/auth_screen/presentation/ui/login_view_view.dart';
+import 'package:kickoff/features/home/home_view.dart';
 import 'package:kickoff/features/onboarding/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -57,13 +59,26 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _navigateToHome() async {
     final isFirst = await CacheHelper.isFirstTime();
+    // Restore token from disk into memory
+    final savedToken = CacheHelper.getData<String>('userToken');
+    if (savedToken != null && savedToken.isNotEmpty) {
+      AppSession.token = savedToken;
+    }
     if (!mounted) return;
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => isFirst ? const OnboardingScreen() : const Home(),
-      ),
-    );
+    if (isFirst) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+      );
+    } else if (AppSession.token != null) {
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeView()));
+    } else {
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const LogginView()));
+    }
   }
 
   @override
