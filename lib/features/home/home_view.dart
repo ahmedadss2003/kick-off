@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/core/utils/custom_nav_bar.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/stadiums_view.dart';
-import 'package:kickoff/features/test/test_view.dart';
+import 'package:kickoff/features/profile/presentation/profile_view.dart';
 
 class HomeView extends StatefulWidget {
   static const String routeName = '/home';
@@ -16,7 +16,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [StadiumsView(), TestView()];
+  final List<Widget> _pages = const [StadiumsView(), ProfileView()];
 
   final List<String> _iconNames = ['Home', 'profile'];
 
@@ -29,23 +29,25 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1117),
       body: IndexedStack(index: _currentIndex, children: _pages),
-      bottomNavigationBar: NavBar(
-        selectedIndex: _currentIndex,
-        color: AppColors.teal,
-        navItems: List.generate(_pages.length, (index) {
-          final iconName = _iconNames[index];
-          return NavItem(
-            icon: CustomNavBar(iconName, color: Colors.grey),
-            selectedIcon: CustomNavBar(
-              iconName,
-              color: AppColors.teal,
-              size: 31.68,
-            ),
-            onTap: () => _onItemTapped(index),
-          );
-        }),
+      bottomNavigationBar: SizedBox(
+        height: 115,
+        child: NavBar(
+          selectedIndex: _currentIndex,
+          color: AppColors.teal,
+          navItems: List.generate(_pages.length, (index) {
+            final iconName = _iconNames[index];
+            return NavItem(
+              icon: CustomNavBar(iconName, color: Colors.grey),
+              selectedIcon: CustomNavBar(
+                iconName,
+                color: AppColors.teal,
+                size: 31.68,
+              ),
+              onTap: () => _onItemTapped(index),
+            );
+          }),
+        ),
       ),
     );
   }
