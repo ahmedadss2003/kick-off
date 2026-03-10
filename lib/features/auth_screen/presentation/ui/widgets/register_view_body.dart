@@ -44,10 +44,7 @@ class RegisterViewBody extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const AuthHeader(
-              title: 'Create Account',
-              subtitle: 'Join Kickoff today.',
-            ),
+            const AuthHeader(title: 'KickOff', subtitle: ''),
             BlocConsumer<AuthCubit, AuthState>(
               listener: (context, state) {
                 if (state is AuthSuccess) {
@@ -73,7 +70,14 @@ class RegisterViewBody extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          "Sign Up",
+                          style: TextStyles.font24BlackBold.copyWith(
+                            color: ColorsManager.mainColor,
+                          ),
+                        ),
                         SizedBox(height: 10.h),
+
                         CustomTextFormField(
                           lable: 'First Name',
                           controller: firstNmaeController,

@@ -61,7 +61,6 @@ class LoginViewBody extends StatelessWidget {
                     message: state.error,
                     color: Colors.red,
                   );
-                  
                 }
               },
               builder: (context, state) {
@@ -72,7 +71,14 @@ class LoginViewBody extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 32.h),
+                        SizedBox(height: 50.h),
+                        Text(
+                          'Sign In',
+                          style: TextStyles.font24BlackBold.copyWith(
+                            color: ColorsManager.mainColor,
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
                         CustomTextFormField(
                           controller: emailController,
 

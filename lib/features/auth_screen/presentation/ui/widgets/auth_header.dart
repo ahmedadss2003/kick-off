@@ -19,13 +19,34 @@ class AuthHeader extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: 54.h),
-              if (title == 'Kickoff') ...[
+              if (title == 'Kickoff' || title == 'KickOff') ...[
                 Text('Welcome to', style: TextStyles.font24BlackBold),
-                Text(
-                  'Kickoff',
-                  style: TextStyles.font24BlackBold.copyWith(
-                    fontSize: 28.sp,
-                    color: ColorsManager.mainColor,
+                RichText(
+                  text: TextSpan(
+                    style: TextStyles.font24BlackBold.copyWith(fontSize: 28.sp),
+                    children: [
+                      TextSpan(
+                        text: 'K',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 5, 215, 26),
+                          fontSize: 36.sp,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'ick',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 0, 112, 4),
+                          fontSize: 36.sp,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'off',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 138, 127, 2),
+                          fontSize: 36.sp,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ] else ...[
