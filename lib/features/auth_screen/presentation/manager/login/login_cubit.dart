@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kickoff/core/errors/expentions.dart';
 import 'package:kickoff/features/auth_screen/data/models/login_requsest.dart';
 import 'package:kickoff/features/auth_screen/presentation/manager/login/login_state.dart';
-import 'package:kickoff/features/auth_screen/data/models/auth_models.dart';
 import 'package:kickoff/features/auth_screen/data/repositories/auth_repository.dart';
 
 class LoginCubit extends Cubit<LoginState> {
@@ -17,6 +17,10 @@ class LoginCubit extends Cubit<LoginState> {
       final user = await authRepository.login(loginRequest);
       emit(LoginSuccess(user));
       log('API Response: $user');
+    } on ServerException catch (e) {
+      final message = e.errorModel.errorMessage;
+      emit(LoginFailure(message));
+      log(message);
     } catch (e) {
       emit(LoginFailure(e.toString()));
       log(e.toString());
@@ -29,6 +33,10 @@ class LoginCubit extends Cubit<LoginState> {
       final user = await authRepository.login(loginRequest);
       emit(LoginSuccess(user));
       log('API Response: $user');
+    } on ServerException catch (e) {
+      final message = e.errorModel.errorMessage;
+      emit(LoginFailure(message));
+      log(message);
     } catch (e) {
       emit(LoginFailure(e.toString()));
       log(e.toString());

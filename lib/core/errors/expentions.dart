@@ -99,18 +99,18 @@ handleDioException(DioException e) {
         case 504: // Bad request
 
           throw BadResponseException(
-            ErrorModel(status: 504, errorMessage: e.response!.data),
+            ErrorModel(errorMessage: e.response!.data),
           );
       }
 
     case DioExceptionType.cancel:
       throw CancelException(
-        ErrorModel(errorMessage: e.toString(), status: 500),
+          ErrorModel(errorMessage: e.toString()),
       );
 
     case DioExceptionType.unknown:
       throw UnknownException(
-        ErrorModel(errorMessage: e.toString(), status: 500),
+        ErrorModel(errorMessage: e.toString()),
       );
   }
 }

@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:kickoff/core/databases/api/api_consumer.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
 import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/core/theming/styles.dart';
@@ -15,24 +14,24 @@ import 'package:kickoff/features/auth_screen/presentation/ui/widgets/auth_header
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_auth_button.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_passward.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_textform.dart';
-import 'package:kickoff/features/auth_screen/presentation/ui/widgets/labeled_auth_text_field.dart';
-import 'package:kickoff/features/test/testfile.dart';
 
-class RegisterViewBody extends StatefulWidget {
-  const RegisterViewBody({super.key});
+class RegisterViewBody extends StatelessWidget {
+  RegisterViewBody({super.key});
 
-  @override
-  State<RegisterViewBody> createState() => _RegisterViewBodyState();
-}
-
-class _RegisterViewBodyState extends State<RegisterViewBody> {
   bool isPasswordObscure = true;
+
   bool isConfirmPasswordObscure = true;
+
   final passwordController = TextEditingController();
+
   final firstNmaeController = TextEditingController();
+
   final lastNameController = TextEditingController();
+
   final emailController = TextEditingController();
+
   final confirmPasswordController = TextEditingController();
+
   final phoneController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
@@ -45,10 +44,7 @@ class _RegisterViewBodyState extends State<RegisterViewBody> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const AuthHeader(
-              title: 'Create Account',
-              subtitle: 'Join Kickoff today.',
-            ),
+            const AuthHeader(title: 'KickOff', subtitle: ''),
             BlocConsumer<AuthCubit, AuthState>(
               listener: (context, state) {
                 if (state is AuthSuccess) {
@@ -74,7 +70,14 @@ class _RegisterViewBodyState extends State<RegisterViewBody> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          "Sign Up",
+                          style: TextStyles.font24BlackBold.copyWith(
+                            color: ColorsManager.mainColor,
+                          ),
+                        ),
                         SizedBox(height: 10.h),
+
                         CustomTextFormField(
                           lable: 'First Name',
                           controller: firstNmaeController,

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/core/databases/cache/cache_helper.dart';
+import 'package:kickoff/core/utils/app_session.dart';
+import 'package:kickoff/features/auth_screen/presentation/ui/login_view_view.dart';
+import 'package:kickoff/features/home/home_view.dart';
 import 'package:kickoff/features/onboarding/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -53,10 +57,28 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-  void _navigateToHome() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-    );
+  Future<void> _navigateToHome() async {
+    final isFirst = await CacheHelper.isFirstTime();
+    // Restore token from disk into memory
+    final savedToken = CacheHelper.getData<String>('userToken');
+    if (savedToken != null && savedToken.isNotEmpty) {
+      AppSession.token = savedToken;
+    }
+    if (!mounted) return;
+
+    if (isFirst) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+      );
+    } else if (AppSession.token != null) {
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeView()));
+    } else {
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const LogginView()));
+    }
   }
 
   @override
@@ -83,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen>
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Image.asset('assets/images/appp_logo.png'),
+                  child: Image.asset('assets/images/app_logo2.png'),
                 ),
               ),
             ),

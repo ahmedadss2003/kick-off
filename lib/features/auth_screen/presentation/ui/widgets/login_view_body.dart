@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
+import 'package:kickoff/core/databases/cache/cache_helper.dart';
 import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/core/theming/styles.dart';
+import 'package:kickoff/core/utils/app_session.dart';
+import 'package:kickoff/core/utils/custom_snackbar.dart';
 import 'package:kickoff/features/auth_screen/data/models/login_requsest.dart';
 import 'package:kickoff/features/auth_screen/data/repositories/auth_repository.dart';
 import 'package:kickoff/features/auth_screen/presentation/manager/login/login_cubit.dart';
@@ -14,8 +17,9 @@ import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_auth
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_passward.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_textform.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/dont_have_account_widget.dart';
-import 'package:kickoff/features/test/testfile.dart';
+import 'package:kickoff/features/home/home_view.dart';
 
+// ignore: must_be_immutable
 class LoginViewBody extends StatelessWidget {
   LoginViewBody({super.key});
 
@@ -42,15 +46,21 @@ class LoginViewBody extends StatelessWidget {
             BlocConsumer<LoginCubit, LoginState>(
               listener: (context, state) {
                 if (state is LoginSuccess) {
+                  if (state.user.token != null) {
+                    AppSession.token = state.user.token;
+                    CacheHelper.setData('userToken', state.user.token!);
+                  }
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const TestFile()),
+                    MaterialPageRoute(builder: (context) => const HomeView()),
                   );
                 }
                 if (state is LoginFailure) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(state.error)));
+                  showCustomSnackBar(
+                    context: context,
+                    message: state.error,
+                    color: Colors.red,
+                  );
                 }
               },
               builder: (context, state) {
@@ -61,7 +71,14 @@ class LoginViewBody extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 32.h),
+                        SizedBox(height: 50.h),
+                        Text(
+                          'Sign In',
+                          style: TextStyles.font24BlackBold.copyWith(
+                            color: ColorsManager.mainColor,
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
                         CustomTextFormField(
                           controller: emailController,
 
@@ -131,33 +148,6 @@ class LoginViewBody extends StatelessWidget {
                         SizedBox(height: 16.h),
                         DontHaveAccountWidget(),
                         SizedBox(height: 18.h),
-                        // Row(
-                        //   children: [
-                        //     const Expanded(child: Divider()),
-                        //     Padding(
-                        //       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        //       child: Text(
-                        //         'OR CONTINUE WITH',
-                        //         style: TextStyles.font12GrayMedium.copyWith(
-                        //           letterSpacing: 1.2,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //     const Expanded(child: Divider()),
-                        //   ],
-                        // ),
-                        // SizedBox(height: 32.h),
-                        // SocialLoginButton(
-                        //   onPressed: () {
-                        //     // Perform Google login
-                        //   },
-                        //   label: 'Continue with Google',
-                        //   icon: Image.network(
-                        //     'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png',
-                        //     height: 24.h,
-                        //   ),
-                        // ),
-                        // SizedBox(height: 32.h),
                       ],
                     ),
                   ),
