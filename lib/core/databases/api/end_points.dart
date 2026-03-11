@@ -6,4 +6,5 @@ class EndPoints {
   static const String logout = "logout";
   static const String stadiums = "user/fields";
   static const String profile = "user/profile";
+  static const String updateProfile = "user/profile/update";
 }
