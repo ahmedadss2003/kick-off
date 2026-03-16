@@ -50,6 +50,12 @@ class LoginViewBody extends StatelessWidget {
                     AppSession.token = state.user.token;
                     CacheHelper.setData('userToken', state.user.token!);
                   }
+                  if (state.user.data?.name != null) {
+                    CacheHelper.setData('userName', state.user.data!.name!);
+                  }
+                  if (state.user.data?.image != null) {
+                    CacheHelper.setData('userImage', state.user.data!.image!);
+                  }
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const HomeView()),

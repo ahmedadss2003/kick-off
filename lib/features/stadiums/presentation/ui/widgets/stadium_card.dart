@@ -5,9 +5,6 @@ import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/widgets/stadium_image_area.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/widgets/stadium_info_row.dart';
 
-/// A card that displays a stadium in the stadiums list.
-/// Matches the home-screen UI mockup with image, rating badge, name, price, and distance.
-/// Tapping navigates to StadiumDetailsScreen.
 class StadiumCard extends StatelessWidget {
   final StadiumModel stadium;
   final int index;

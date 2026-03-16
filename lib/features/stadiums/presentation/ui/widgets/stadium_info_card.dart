@@ -66,11 +66,7 @@ class StadiumInfoCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.place,
-                  size: 18,
-                  color: Color(0xFF757575),
-                ),
+                const Icon(Icons.place, size: 18, color: Color(0xFF757575)),
                 const SizedBox(width: 4),
                 Text(
                   '${stadium.distanceKm!.toStringAsFixed(1)} كم عن موقعك',
@@ -124,37 +120,52 @@ class StadiumInfoCard extends StatelessWidget {
   }
 
   Future<void> _openLocation(BuildContext context, StadiumModel stadium) async {
-    final lat = stadium.latitude;
-    final lng = stadium.longitude;
+    final location = stadium.location;
 
-    if (lat == null || lng == null) {
+    if (location == null || location.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('الموقع غير متاح لهذا الملعب')),
       );
       return;
     }
 
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
-    );
+    Uri? uri;
+
+    // Case 1: Google Maps short/full URL (e.g. https://maps.app.goo.gl/...)
+    if (location.startsWith('http')) {
+      uri = Uri.tryParse(location);
+    }
+    // Case 2: "lat,lng" format (e.g. "30.0444,31.2357")
+    else if (location.contains(',')) {
+      final lat = stadium.latitude;
+      final lng = stadium.longitude;
+      if (lat != null && lng != null) {
+        uri = Uri.parse(
+          'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+        );
+      }
+    }
+
+    if (uri == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('صيغة الموقع غير مدعومة')));
+      return;
+    }
 
     try {
-      final canLaunch = await canLaunchUrl(uri);
-      if (!canLaunch) {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('لا يمكن فتح تطبيق الخرائط')),
         );
-        return;
       }
-
-      await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
     } catch (_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('حدث خطأ أثناء فتح الموقع')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('حدث خطأ أثناء فتح الموقع')),
+        );
+      }
     }
   }
 }

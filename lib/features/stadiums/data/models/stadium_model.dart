@@ -1,3 +1,5 @@
+import 'package:kickoff/core/databases/api/end_points.dart';
+
 class StadiumModel {
   final int? id;
   final String? name;
@@ -37,6 +39,17 @@ class StadiumModel {
 
   factory StadiumModel.fromJson(Map<String, dynamic> json) {
     final rawImages = json['images'] as List<dynamic>? ?? [];
+    List<String> parsedImages = [];
+    for (var imgObj in rawImages) {
+      if (imgObj is Map<String, dynamic> && imgObj['image'] != null) {
+        String url = imgObj['image'].toString();
+        if (!url.startsWith('http')) {
+          url = "${EndPoints.imageBaseUrl}$url";
+        }
+        parsedImages.add(url);
+      }
+    }
+
     return StadiumModel(
       id: json['id'],
       name: json['name'],
@@ -51,7 +64,7 @@ class StadiumModel {
       location: json['location'],
       rating: json['rating'],
       phone: json['phone'],
-      images: rawImages.map((e) => e.toString()).toList(),
+      images: parsedImages,
     );
   }
 
