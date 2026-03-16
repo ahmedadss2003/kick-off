@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/register_view.dart';
 import 'package:kickoff/features/onboarding/onboarding_screen.dart';
+import 'package:kickoff/features/profile/data/models/user_profile_model.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/stadium_details_screen.dart';
 
