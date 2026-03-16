@@ -33,7 +33,7 @@ class StadiumInfoRow extends StatelessWidget {
             children: [
               // Price chip (green)
               _Chip(
-                label: '${stadium.price?.toInt() ?? 0} ج/ساعة',
+                label: ' ${stadium.price?.toInt() ?? 0} ج/ساعة',
                 backgroundColor: const Color(0xFFE8F5E9),
                 textColor: const Color(0xFF2E7D32),
               ),
@@ -41,14 +41,14 @@ class StadiumInfoRow extends StatelessWidget {
               // Directional arrow between chips
               const SizedBox(width: 8),
               const Icon(Icons.arrow_back, size: 16, color: Color(0xFF2E7D32)),
-              const SizedBox(width: 8),
+              //const SizedBox(width: 8),
 
               // Distance chip (grey) — only shown if distance is available
               if (stadium.distanceKm != null)
                 _Chip(
                   label: '${stadium.distanceKm!.toStringAsFixed(1)} كم عنك',
                   backgroundColor: const Color(0xFFF5F5F5),
-                  textColor: const Color(0xFF757575),
+                  textColor: Colors.red,
                 ),
             ],
           ),

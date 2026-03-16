@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:kickoff/core/databases/api/dio_consumer.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/login_view_view.dart';
 import 'package:kickoff/features/profile/data/services/logout_service.dart';
 
@@ -29,7 +30,10 @@ class LogoutTile extends StatelessWidget {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            onPressed: () => Navigator.pop(ctx, true),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LogginView()),
+            ),
             child: const Text('Logout'),
           ),
         ],
@@ -44,7 +48,7 @@ class LogoutTile extends StatelessWidget {
       );
 
       try {
-        await LogoutService(Dio()).logout();
+        await LogoutService(dioConsumer: DioConsumer(dio: Dio()));
       } catch (_) {}
 
       if (context.mounted) {
