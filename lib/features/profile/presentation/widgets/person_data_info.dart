@@ -41,7 +41,10 @@ class _PersonalDataInfoState extends State<PersonalDataInfo> {
 
     try {
       final newUrl = await UpdateProfileService.updateProfileImage(
-        _pickedImage!,
+        imageFile: _pickedImage!,
+        name: widget.user.name,
+        email: widget.user.email,
+        mobileNumber: widget.user.mobileNumber,
       );
 
       // Update the displayed URL with fresh one from API
