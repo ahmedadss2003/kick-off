@@ -1,4 +1,5 @@
 import 'package:kickoff/features/auth_screen/presentation/ui/register_view.dart';
+import 'package:kickoff/features/stadiums/presentation/ui/all_stadiums_screen.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/stadium_details_screen.dart';
 
 class Routes {
@@ -8,4 +9,6 @@ class Routes {
   static const String register = RegisterView.routeName;
   static const String stadiums = "/stadiums";
   static const String stadiumDetails = StadiumDetailsScreen.routeName;
+  static const String stadiumsAll = AllStadiumsScreen.routeName;
+  static const String login = "/login";
 }
