@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
+import 'package:kickoff/core/routes_manager/routes.dart';
 import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/core/theming/styles.dart';
+import 'package:kickoff/core/utils/custom_snackbar.dart';
 import 'package:kickoff/features/auth_screen/data/models/register_request.dart';
 import 'package:kickoff/features/auth_screen/data/repositories/auth_repository.dart';
 import 'package:kickoff/features/auth_screen/presentation/manager/register/cubits/auth_cubit.dart';
 import 'package:kickoff/features/auth_screen/presentation/manager/register/cubits/auth_states.dart';
-import 'package:kickoff/features/auth_screen/presentation/ui/login_view_view.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/auth_header.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_auth_button.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_passward.dart';
@@ -48,17 +49,13 @@ class RegisterViewBody extends StatelessWidget {
             BlocConsumer<AuthCubit, AuthState>(
               listener: (context, state) {
                 if (state is AuthSuccess) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => LogginView()),
-                  );
+                  Navigator.pushReplacementNamed(context, Routes.login);
                 }
                 if (state is AuthFailure) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.error.toString()),
-                      backgroundColor: Colors.red,
-                    ),
+                  showCustomSnackBar(
+                    context: context,
+                    message: state.error.toString(),
+                    color: Colors.red,
                   );
                 }
               },

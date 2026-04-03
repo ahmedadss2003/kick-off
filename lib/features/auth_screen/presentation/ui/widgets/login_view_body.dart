@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
 import 'package:kickoff/core/databases/cache/cache_helper.dart';
+import 'package:kickoff/core/routes_manager/routes.dart';
 import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/core/theming/styles.dart';
 import 'package:kickoff/core/utils/app_session.dart';
@@ -56,10 +57,7 @@ class LoginViewBody extends StatelessWidget {
                   if (state.user.data?.image != null) {
                     CacheHelper.setData('userImage', state.user.data!.image!);
                   }
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeView()),
-                  );
+                  Navigator.pushReplacementNamed(context, Routes.home);
                 }
                 if (state is LoginFailure) {
                   showCustomSnackBar(

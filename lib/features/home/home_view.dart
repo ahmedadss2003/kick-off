@@ -34,7 +34,7 @@ class _HomeViewState extends State<HomeView> {
         height: 115,
         child: NavBar(
           selectedIndex: _currentIndex,
-          color: AppColors.teal,
+          color: Colors.white,
           navItems: List.generate(_pages.length, (index) {
             final iconName = _iconNames[index];
             return NavItem(
