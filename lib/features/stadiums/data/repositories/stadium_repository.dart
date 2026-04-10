@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:kickoff/core/databases/api/api_consumer.dart';
 import 'package:kickoff/core/databases/api/end_points.dart';
+import 'package:kickoff/features/stadiums/data/models/field_details_response.dart';
+import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 import 'package:kickoff/features/stadiums/data/models/stadiums_response.dart';
 import 'package:kickoff/features/stadiums/data/models/reviews_response.dart';
 import 'package:kickoff/features/stadiums/data/models/add_review_response.dart';
@@ -11,6 +13,7 @@ import 'package:kickoff/features/stadiums/data/models/delete_review_response.dar
 import 'package:kickoff/features/stadiums/data/models/replies_response.dart';
 import 'package:kickoff/features/stadiums/data/models/add_reply_response.dart';
 import 'package:kickoff/features/stadiums/data/models/delete_reply_response.dart';
+import 'package:kickoff/features/stadiums/data/models/rating_stats_model.dart';
 
 class StadiumRepository {
   final ApiConsumer apiConsumer;
@@ -34,6 +37,56 @@ class StadiumRepository {
     return StadiumsResponse.fromJson(json);
   }
 
+  Future<StadiumModel> getFieldDetails(int fieldId) async {
+    log('Fetching field details: ${EndPoints.getField(fieldId)}');
+    final response = await apiConsumer.get(EndPoints.getField(fieldId));
+
+    if (response == null) {
+      throw Exception('Failed to fetch field: Server returned no data');
+    }
+
+    final Map<String, dynamic> json = response is String
+        ? (jsonDecode(response) as Map<String, dynamic>)
+        : response as Map<String, dynamic>;
+
+    return FieldDetailsResponse.fromJson(json).data;
+  }
+
+  /// GET `user/fields/search?search=...` — same list shape as [getStadiums].
+  Future<StadiumsResponse> searchFields(String query) async {
+    final q = query.trim();
+    log('Search fields: ${EndPoints.searchFields} q=$q');
+    final response = await apiConsumer.get(
+      EndPoints.searchFields,
+      queryParameters: {'search': q},
+    );
+
+    if (response == null) {
+      throw Exception('Failed to search fields: Server returned no data');
+    }
+
+    final Map<String, dynamic> json = response is String
+        ? (jsonDecode(response) as Map<String, dynamic>)
+        : response as Map<String, dynamic>;
+
+    return StadiumsResponse.fromJson(json);
+  }
+
+  Future<RatingStatsModel> getRatingStats(int fieldId) async {
+    log('Fetching rating stats from: ${EndPoints.getRatingStats(fieldId)}');
+    final response = await apiConsumer.get(EndPoints.getRatingStats(fieldId));
+
+    if (response == null) {
+      throw Exception('Failed to fetch rating stats: Server returned no data');
+    }
+
+    final Map<String, dynamic> json = response is String
+        ? (jsonDecode(response) as Map<String, dynamic>)
+        : response as Map<String, dynamic>;
+
+    return RatingStatsModel.fromJson(json);
+  }
+
   Future<ReviewsResponse> getReviews(int fieldId) async {
     log('Fetching reviews from: ${EndPoints.getReviews(fieldId)}');
     final response = await apiConsumer.get(EndPoints.getReviews(fieldId));
@@ -49,11 +102,11 @@ class StadiumRepository {
     return ReviewsResponse.fromJson(json);
   }
 
-  Future<AddReviewResponse> addReview(int fieldId, String content) async {
+  Future<AddReviewResponse> addReview(int fieldId, String content, int rating) async {
     log('Adding review to: ${EndPoints.reviews}');
     final response = await apiConsumer.post(
       EndPoints.reviews,
-      data: {'fields_id': fieldId, 'content': content},
+      data: {'field_id': fieldId, 'comment': content, 'rating': rating},
     );
 
     if (response == null) {

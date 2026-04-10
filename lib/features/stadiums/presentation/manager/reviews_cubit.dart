@@ -20,10 +20,21 @@ class ReviewsCubit extends Cubit<ReviewsState> {
     }
   }
 
-  Future<void> addReview(int fieldId, String content) async {
+  Future<void> getRatingStats(int fieldId) async {
+    emit(RatingStatsLoading());
+    try {
+      final stats = await stadiumRepository.getRatingStats(fieldId);
+      emit(RatingStatsSuccess(stats));
+    } catch (e) {
+      log('Error getting rating stats: $e');
+      emit(RatingStatsFailure(e.toString()));
+    }
+  }
+
+  Future<void> addReview(int fieldId, String content, int rating) async {
     emit(AddReviewLoading());
     try {
-      final response = await stadiumRepository.addReview(fieldId, content);
+      final response = await stadiumRepository.addReview(fieldId, content, rating);
 
       if (response.success && response.data != null) {
         emit(AddReviewSuccess(response.data!));

@@ -36,6 +36,20 @@ class StadiumInfoCard extends StatelessWidget {
               color: Color(0xFF1A1A1A),
             ),
           ),
+          if ((stadium.description ?? '').trim().isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              stadium.description!.trim(),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.45,
+                color: Color(0xFF616161),
+              ),
+              maxLines: 8,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
           const SizedBox(height: 8),
 
           // ── Rating row ─────────────────────────────────────────────
@@ -99,10 +113,10 @@ class StadiumInfoCard extends StatelessWidget {
               const SizedBox(width: 10),
               _ActionButton(
                 icon: Icons.phone,
-                label: 'اتصال\n${stadium.phone ?? '...'}',
+                label: 'اتصال\n${_displayPhone(stadium)}',
                 backgroundColor: const Color(0xFFE8F5E9),
                 iconColor: const Color(0xFF2E7D32),
-                onTap: () {},
+                onTap: () => _callPhone(context, stadium),
               ),
               const SizedBox(width: 10),
               _ActionButton(
@@ -117,6 +131,37 @@ class StadiumInfoCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  static String _displayPhone(StadiumModel stadium) {
+    final p = stadium.phone ?? stadium.owner?.phone;
+    if (p == null || p.isEmpty) return '...';
+    return p;
+  }
+
+  Future<void> _callPhone(BuildContext context, StadiumModel stadium) async {
+    final raw = stadium.phone ?? stadium.owner?.phone;
+    if (raw == null || raw.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('رقم الهاتف غير متاح')),
+      );
+      return;
+    }
+    final uri = Uri.parse('tel:$raw');
+    try {
+      final ok = await launchUrl(uri);
+      if (!ok && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('لا يمكن بدء الاتصال')),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('حدث خطأ أثناء الاتصال')),
+        );
+      }
+    }
   }
 
   Future<void> _openLocation(BuildContext context, StadiumModel stadium) async {

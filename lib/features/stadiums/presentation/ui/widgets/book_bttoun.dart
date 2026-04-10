@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:kickoff/core/utils/custom_snackbar.dart';
-import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_btn.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
+import 'package:kickoff/features/stadiums/presentation/ui/booking_sheet.dart';
 
 class BookButton extends StatelessWidget {
   final StadiumModel stadium;
@@ -23,16 +22,38 @@ class BookButton extends StatelessWidget {
       ],
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-
-        child: CustomBtn(
-          text: 'احجز الآن',
-          onPressed: () {
-            showCustomSnackBar(
-              context: context,
-              message: 'جاري فتح الحجز لـ "${stadium.name}"',
-              color: const Color(0xFF2E7D32),
-            );
-          },
+        child: SizedBox(
+          width: double.infinity,
+          height: 54,
+          child: ElevatedButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (_) => BookingSheet(stadium: stadium),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2E7D32),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.calendar_month, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  'احجز الآن',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

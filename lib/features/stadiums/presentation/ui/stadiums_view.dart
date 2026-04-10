@@ -2,13 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
+import 'package:kickoff/core/routes_manager/routes.dart';
+import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 import 'package:kickoff/features/stadiums/data/repositories/stadium_repository.dart';
 import 'package:kickoff/features/stadiums/presentation/manager/stadiums_cubit.dart';
 import 'package:kickoff/features/stadiums/presentation/manager/stadiums_state.dart';
+import 'package:kickoff/features/stadiums/presentation/ui/widgets/market_image_app.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/widgets/stadium_card.dart';
 
-/// The main stadiums list screen.
-/// Shows a 2-column grid of [StadiumCard]s matching the home screen mockup.
+/// Home stadiums: horizontal row; "عرض الكل" opens [AllStadiumsScreen] (2 columns).
 class StadiumsView extends StatelessWidget {
   static const String routeName = '/stadiums';
 
@@ -38,14 +40,12 @@ class StadiumsView extends StatelessWidget {
         ),
         body: BlocBuilder<StadiumsCubit, StadiumsState>(
           builder: (context, state) {
-            // ── Loading ─────────────────────────────────────────────
             if (state is StadiumsLoading || state is StadiumsInitial) {
               return const Center(
                 child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
               );
             }
 
-            // ── Error ───────────────────────────────────────────────
             if (state is StadiumsFailure) {
               return _ErrorView(
                 message: state.error,
@@ -53,7 +53,6 @@ class StadiumsView extends StatelessWidget {
               );
             }
 
-            // ── Success ─────────────────────────────────────────────
             if (state is StadiumsSuccess) {
               if (state.stadiums.isEmpty) {
                 return const Center(
@@ -64,25 +63,9 @@ class StadiumsView extends StatelessWidget {
                 );
               }
 
-              return RefreshIndicator(
-                color: const Color(0xFF2E7D32),
+              return _StadiumsSuccessBody(
+                stadiums: state.stadiums,
                 onRefresh: () => context.read<StadiumsCubit>().fetchStadiums(),
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(12),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.62,
-                  ),
-                  itemCount: state.stadiums.length,
-                  itemBuilder: (context, index) {
-                    return StadiumCard(
-                      stadium: state.stadiums[index],
-                      index: index,
-                    );
-                  },
-                ),
               );
             }
 
@@ -94,7 +77,136 @@ class StadiumsView extends StatelessWidget {
   }
 }
 
-// ── Private error view widget ──────────────────────────────────────────────
+class _StadiumsSuccessBody extends StatelessWidget {
+  final List<StadiumModel> stadiums;
+  final Future<void> Function() onRefresh;
+
+  const _StadiumsSuccessBody({required this.stadiums, required this.onRefresh});
+
+  void _openAllStadiums(BuildContext context) {
+    Navigator.of(context).pushNamed(Routes.stadiumsAll, arguments: stadiums);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      color: const Color(0xFF2E7D32),
+      onRefresh: onRefresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const MarkingImageScreen(),
+            const SizedBox(height: 16),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'استكشف الملاعب',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1A1A1A),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 252,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: stadiums.length + 1,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  if (index == stadiums.length) {
+                    return _ShowAllTile(onTap: () => _openAllStadiums(context));
+                  }
+                  return SizedBox(
+                    width: 180,
+
+                    child: StadiumCard(stadium: stadiums[index], index: index),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ShowAllTile extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _ShowAllTile({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: 104,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFF2E7D32).withValues(alpha: 0.35),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.grid_view_rounded,
+                size: 36,
+                color: Color(0xFF2E7D32),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'عرض الكل',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF2E7D32),
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 2),
+
+              // Text(
+              //   'Show all',
+              //   textAlign: TextAlign.center,
+              //   style: TextStyle(
+              //     fontSize: 10,
+              //     color: Colors.grey.shade600,
+              //     height: 1.1,
+              //   ),
+              // ),
+              // const SizedBox(height: 4),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _ErrorView extends StatelessWidget {
   final String message;

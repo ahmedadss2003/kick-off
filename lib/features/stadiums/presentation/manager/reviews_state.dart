@@ -1,5 +1,6 @@
 import 'package:kickoff/features/stadiums/data/models/review_model.dart';
 import 'package:kickoff/features/stadiums/data/models/reply_model.dart';
+import 'package:kickoff/features/stadiums/data/models/rating_stats_model.dart';
 
 abstract class ReviewsState {}
 
@@ -15,6 +16,19 @@ class ReviewsSuccess extends ReviewsState {
 class ReviewsFailure extends ReviewsState {
   final String error;
   ReviewsFailure(this.error);
+}
+
+// Rating Stats States
+class RatingStatsLoading extends ReviewsState {}
+
+class RatingStatsSuccess extends ReviewsState {
+  final RatingStatsModel stats;
+  RatingStatsSuccess(this.stats);
+}
+
+class RatingStatsFailure extends ReviewsState {
+  final String error;
+  RatingStatsFailure(this.error);
 }
 
 // Add Review States

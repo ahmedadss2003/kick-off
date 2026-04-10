@@ -14,10 +14,9 @@ class StadiumImageArea extends StatelessWidget {
       borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       child: Stack(
         children: [
-          // ── Image / placeholder ──────────────────────────────────────
-          SizedBox(
-            height: 160,
-            width: double.infinity,
+          // ── Image / placeholder (square thumb — fits 3-column grid) ─
+          AspectRatio(
+            aspectRatio: 1,
             child: stadium.images.isNotEmpty
                 ? Image.network(
                     stadium.images.first,
@@ -29,8 +28,8 @@ class StadiumImageArea extends StatelessWidget {
 
           // ── Rating badge (top-left) ──────────────────────────────────
           Positioned(
-            top: 10,
-            left: 10,
+            top: 6,
+            left: 6,
             child: RatingBadge(rating: stadium.rating),
           ),
         ],

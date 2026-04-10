@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kickoff/core/utils/custom_snackbar.dart';
 import 'package:kickoff/features/stadiums/presentation/manager/reviews_cubit.dart';
 import 'package:kickoff/features/stadiums/presentation/manager/reviews_state.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/widgets/review_card.dart';
@@ -57,28 +58,31 @@ class StadiumReviewsSection extends StatelessWidget {
                     backgroundColor: Colors.red,
                   ),
                 );
-              } else if (state is UpdateReviewSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('تم تحديث التقييم بنجاح'),
-                    backgroundColor: Color(0xFF2E7D32),
-                  ),
+              }
+              //  else if (state is UpdateReviewSuccess) {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     const SnackBar(
+              //       content: Text('تم تحديث التقييم بنجاح'),
+              //       backgroundColor: Color(0xFF2E7D32),
+              //     ),
+              //   );
+              //   context.read<ReviewsCubit>().getReviews(stadiumId);
+              // }
+              //  else if (state is UpdateReviewFailure) {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     SnackBar(
+              //       content: Text(state.error),
+              //       backgroundColor: Colors.red,
+              //     ),
+              //   );
+              // }
+              else if (state is DeleteReviewSuccess) {
+                showCustomSnackBar(
+                  context: context,
+                  message: 'تم حذف التقييم بنجاح',
+                  color: Colors.green,
                 );
-                context.read<ReviewsCubit>().getReviews(stadiumId);
-              } else if (state is UpdateReviewFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.error),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              } else if (state is DeleteReviewSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('تم حذف التقييم بنجاح'),
-                    backgroundColor: Color(0xFF2E7D32),
-                  ),
-                );
+
                 context.read<ReviewsCubit>().getReviews(stadiumId);
               } else if (state is DeleteReviewFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -87,31 +91,33 @@ class StadiumReviewsSection extends StatelessWidget {
                     backgroundColor: Colors.red,
                   ),
                 );
-              } else if (state is AddReplySuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('تمت إضافة الرد بنجاح'),
-                    backgroundColor: Color(0xFF2E7D32),
-                  ),
-                );
-                context.read<ReviewsCubit>().getReplies(state.reviewId);
-              } else if (state is DeleteReplySuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('تم حذف الرد بنجاح'),
-                    backgroundColor: Color(0xFF2E7D32),
-                  ),
-                );
-                context.read<ReviewsCubit>().getReplies(state.reviewId);
-              } else if (state is UpdateReplySuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('تم تعديل الرد بنجاح'),
-                    backgroundColor: Color(0xFF2E7D32),
-                  ),
-                );
-                context.read<ReviewsCubit>().getReplies(state.reviewId);
               }
+              // else if (state is AddReplySuccess) {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     const SnackBar(
+              //       content: Text('تمت إضافة الرد بنجاح'),
+              //       backgroundColor: Color(0xFF2E7D32),
+              //     ),
+              //   );
+              //   context.read<ReviewsCubit>().getReplies(state.reviewId);
+              // }
+              // else if (state is DeleteReplySuccess) {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     const SnackBar(
+              //       content: Text('تم حذف الرد بنجاح'),
+              //       backgroundColor: Color(0xFF2E7D32),
+              //     ),
+              //   );
+              //   context.read<ReviewsCubit>().getReplies(state.reviewId);
+              // } else if (state is UpdateReplySuccess) {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     const SnackBar(
+              //       content: Text('تم تعديل الرد بنجاح'),
+              //       backgroundColor: Color(0xFF2E7D32),
+              //     ),
+              //   );
+              //   context.read<ReviewsCubit>().getReplies(state.reviewId);
+              // }
             },
             buildWhen: (previous, current) {
               return current is ReviewsLoading ||
@@ -178,88 +184,126 @@ class StadiumReviewsSection extends StatelessWidget {
   void _showAddReviewDialog(BuildContext parentContext) {
     final controller = TextEditingController();
     final cubit = parentContext.read<ReviewsCubit>();
+    int selectedRating = 0;
 
     showModalBottomSheet(
       context: parentContext,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child:
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'إضافة تقييم',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child:
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(24),
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: controller,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        hintText: 'اكتب تقييمك هنا...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: Colors.black12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text(
+                          'إضافة تقييم',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF2E7D32),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(5, (index) {
+                            return IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  selectedRating = index + 1;
+                                });
+                              },
+                              icon: Icon(
+                                index < selectedRating
+                                    ? Icons.star
+                                    : Icons.star_border,
+                                color: Colors.amber,
+                                size: 36,
+                              ),
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: controller,
+                          maxLines: 4,
+                          decoration: InputDecoration(
+                            hintText: 'اكتب تقييمك هنا...',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(
+                                color: Colors.black12,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF2E7D32),
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xFFF9F9F9),
                           ),
                         ),
-                        filled: true,
-                        fillColor: const Color(0xFFF9F9F9),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () {
-                        final content = controller.text.trim();
-                        if (content.isNotEmpty) {
-                          cubit.addReview(stadiumId, content);
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E7D32),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: () {
+                            final content = controller.text.trim();
+                            if (selectedRating == 0) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'الرجاء اختيار التقييم (عدد النجوم) أولاً',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+                            cubit.addReview(stadiumId, content, selectedRating);
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2E7D32),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: const Text(
+                            'إرسال التقييم',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text(
-                        'إرسال التقييم',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ).animate().slideY(
-                begin: 1,
-                end: 0,
-                duration: 300.ms,
-                curve: Curves.easeOut,
-              ),
+                  ).animate().slideY(
+                    begin: 1,
+                    end: 0,
+                    duration: 300.ms,
+                    curve: Curves.easeOut,
+                  ),
+            );
+          },
         );
       },
     );

@@ -10,7 +10,7 @@ class StadiumInfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end, // RTL: right-align
         children: [
@@ -18,35 +18,32 @@ class StadiumInfoRow extends StatelessWidget {
           Text(
             stadium.name ?? 'ملعب',
             style: const TextStyle(
-              fontSize: 15,
+              fontSize: 12,
               fontWeight: FontWeight.w700,
               color: Color(0xFF1A1A1A),
+              height: 1.2,
             ),
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textDirection: TextDirection.rtl,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
-          // ── Chips row (price + distance) ─────────────────────────────
-          Row(
+          // ── Chips (wrap — avoids overflow in 3-column grid) ───────────
+          Wrap(
+            spacing: 4,
+            runSpacing: 4,
+            alignment: WrapAlignment.end,
             textDirection: TextDirection.rtl,
             children: [
-              // Price chip (green)
               _Chip(
-                label: ' ${stadium.price?.toInt() ?? 0} ج/ساعة',
+                label: '${stadium.price?.toInt() ?? 0} EGP/Hour',
                 backgroundColor: const Color(0xFFE8F5E9),
                 textColor: const Color(0xFF2E7D32),
               ),
-
-              // Directional arrow between chips
-              const SizedBox(width: 8),
-              const Icon(Icons.arrow_back, size: 16, color: Color(0xFF2E7D32)),
-              //const SizedBox(width: 8),
-
-              // Distance chip (grey) — only shown if distance is available
               if (stadium.distanceKm != null)
                 _Chip(
-                  label: '${stadium.distanceKm!.toStringAsFixed(1)} كم عنك',
+                  label: '${stadium.distanceKm!.toStringAsFixed(1)} كم',
                   backgroundColor: const Color(0xFFF5F5F5),
                   textColor: Colors.red,
                 ),
@@ -73,7 +70,7 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(20),
@@ -82,7 +79,7 @@ class _Chip extends StatelessWidget {
         label,
         style: TextStyle(
           color: textColor,
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: FontWeight.w600,
         ),
       ),
