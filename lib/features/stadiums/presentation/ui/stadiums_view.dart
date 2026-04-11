@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
 import 'package:kickoff/core/routes_manager/routes.dart';
+import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 import 'package:kickoff/features/stadiums/data/repositories/stadium_repository.dart';
 import 'package:kickoff/features/stadiums/presentation/manager/stadiums_cubit.dart';
 import 'package:kickoff/features/stadiums/presentation/manager/stadiums_state.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/widgets/market_image_app.dart';
+import 'package:kickoff/features/home/presentation/widgets/home_header.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/widgets/stadium_card.dart';
 
 /// Home stadiums: horizontal row; "عرض الكل" opens [AllStadiumsScreen] (2 columns).
@@ -24,53 +26,42 @@ class StadiumsView extends StatelessWidget {
             ..fetchStadiums(),
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFF5F5F5),
-          elevation: 0,
-          title: const Text(
-            'الملاعب المتاحة',
-            style: TextStyle(
-              color: Color(0xFF1A1A1A),
-              fontWeight: FontWeight.w700,
-              fontSize: 20,
-            ),
-          ),
-          centerTitle: true,
-          iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
-        ),
-        body: BlocBuilder<StadiumsCubit, StadiumsState>(
-          builder: (context, state) {
-            if (state is StadiumsLoading || state is StadiumsInitial) {
-              return const Center(
-                child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
-              );
-            }
-
-            if (state is StadiumsFailure) {
-              return _ErrorView(
-                message: state.error,
-                onRetry: () => context.read<StadiumsCubit>().fetchStadiums(),
-              );
-            }
-
-            if (state is StadiumsSuccess) {
-              if (state.stadiums.isEmpty) {
+        body: SafeArea(
+          child: BlocBuilder<StadiumsCubit, StadiumsState>(
+            builder: (context, state) {
+              if (state is StadiumsLoading || state is StadiumsInitial) {
                 return const Center(
-                  child: Text(
-                    'لا توجد ملاعب متاحة حالياً',
-                    style: TextStyle(color: Colors.black54, fontSize: 16),
-                  ),
+                  child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
                 );
               }
 
-              return _StadiumsSuccessBody(
-                stadiums: state.stadiums,
-                onRefresh: () => context.read<StadiumsCubit>().fetchStadiums(),
-              );
-            }
+              if (state is StadiumsFailure) {
+                return _ErrorView(
+                  message: state.error,
+                  onRetry: () => context.read<StadiumsCubit>().fetchStadiums(),
+                );
+              }
 
-            return const SizedBox.shrink();
-          },
+              if (state is StadiumsSuccess) {
+                if (state.stadiums.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'لا توجد ملاعب متاحة حالياً',
+                      style: TextStyle(color: Colors.black54, fontSize: 16),
+                    ),
+                  );
+                }
+
+                return _StadiumsSuccessBody(
+                  stadiums: state.stadiums,
+                  onRefresh: () =>
+                      context.read<StadiumsCubit>().fetchStadiums(),
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       ),
     );
@@ -98,24 +89,49 @@ class _StadiumsSuccessBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const HomeHeader(),
             const MarkingImageScreen(),
             const SizedBox(height: 16),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  'استكشف الملاعب',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => _openAllStadiums(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.teal,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.arrow_back_ios_new_rounded, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'عرض الكل',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  const Text(
+                    'استكشف الملاعب',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1A1A1A),
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(
-              height: 252,
+              height: 280,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -123,7 +139,7 @@ class _StadiumsSuccessBody extends StatelessWidget {
                 separatorBuilder: (_, __) => const SizedBox(width: 10),
                 itemBuilder: (context, index) {
                   if (index == stadiums.length) {
-                    return _ShowAllTile(onTap: () => _openAllStadiums(context));
+                    return SizedBox();
                   }
                   return SizedBox(
                     width: 180,
@@ -140,73 +156,67 @@ class _StadiumsSuccessBody extends StatelessWidget {
   }
 }
 
-class _ShowAllTile extends StatelessWidget {
-  final VoidCallback onTap;
+// class _ShowAllTile extends StatelessWidget {
+//   final VoidCallback onTap;
 
-  const _ShowAllTile({required this.onTap});
+//   const _ShowAllTile({required this.onTap});
 
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          width: 104,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFF2E7D32).withValues(alpha: 0.35),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.grid_view_rounded,
-                size: 36,
-                color: Color(0xFF2E7D32),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'عرض الكل',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF2E7D32),
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 2),
-
-              // Text(
-              //   'Show all',
-              //   textAlign: TextAlign.center,
-              //   style: TextStyle(
-              //     fontSize: 10,
-              //     color: Colors.grey.shade600,
-              //     height: 1.1,
-              //   ),
-              // ),
-              // const SizedBox(height: 4),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: 140,
+//       margin: const EdgeInsets.only(right: 8, left: 16),
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(24),
+//         border: Border.all(
+//           color: AppColors.teal.withValues(alpha: 0.1),
+//           width: 2,
+//         ),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withValues(alpha: 0.05),
+//             blurRadius: 10,
+//             offset: const Offset(0, 4),
+//           ),
+//         ],
+//       ),
+//       child: Material(
+//         color: Colors.transparent,
+//         child: InkWell(
+//           onTap: onTap,
+//           borderRadius: BorderRadius.circular(24),
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Container(
+//                 padding: EdgeInsets.all(12),
+//                 decoration: BoxDecoration(
+//                   color: Color(0xFFE0F2F1),
+//                   shape: BoxShape.circle,
+//                 ),
+//                 child: Icon(
+//                   Icons.grid_view_rounded,
+//                   size: 28,
+//                   color: AppColors.teal,
+//                 ),
+//               ),
+//               SizedBox(height: 12),
+//               Text(
+//                 'عرض الكل',
+//                 style: TextStyle(
+//                   fontSize: 14,
+//                   fontWeight: FontWeight.w700,
+//                   color: Color(0xFF1A1A1A),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class _ErrorView extends StatelessWidget {
   final String message;

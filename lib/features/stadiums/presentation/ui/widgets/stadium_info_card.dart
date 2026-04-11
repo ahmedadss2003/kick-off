@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// White info card shown on the details screen.
-/// Displays stadium name and star rating.
 class StadiumInfoCard extends StatelessWidget {
   final StadiumModel stadium;
 
@@ -13,115 +12,133 @@ class StadiumInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.07),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: AppColors.teal.withValues(alpha: 0.02),
+            blurRadius: 2,
+            spreadRadius: 2,
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Name ───────────────────────────────────────────────────
-          Text(
-            stadium.name ?? 'ملعب',
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A1A),
-            ),
+          // ── Name & Rating Header ───────────────────────────────────
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  stadium.name ?? 'ملعب',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF1A1A1A),
+                    letterSpacing: -0.5,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFC107).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 20),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${stadium.rating?.toInt() ?? 0}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 12),
+
+          // ── Description ──────────────────────────────────────────
           if ((stadium.description ?? '').trim().isNotEmpty) ...[
-            const SizedBox(height: 12),
             Text(
               stadium.description!.trim(),
-              textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                height: 1.45,
-                color: Color(0xFF616161),
+                height: 1.6,
+                color: Colors.black.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w400,
               ),
               maxLines: 8,
               overflow: TextOverflow.ellipsis,
             ),
+            const SizedBox(height: 16),
           ],
-          const SizedBox(height: 8),
 
-          // ── Rating row ─────────────────────────────────────────────
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${stadium.rating?.toInt() ?? 0} / 10',
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Color(0xFF424242),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(width: 8),
-              ...List.generate(5, (i) {
-                final filled = i < ((stadium.rating ?? 0) / 2).round();
-                return Icon(
-                  filled ? Icons.star : Icons.star_border,
-                  color: const Color(0xFFFFC107),
-                  size: 20,
-                );
-              }),
-            ],
-          ),
+          // ── Distance Row ───────────────────────────────────────────
           if (stadium.distanceKm != null) ...[
-            const SizedBox(height: 8),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.place, size: 18, color: Color(0xFF757575)),
-                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: AppColors.teal.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.place_rounded, size: 14, color: AppColors.teal),
+                ),
+                const SizedBox(width: 8),
                 Text(
-                  '${stadium.distanceKm!.toStringAsFixed(1)} كم عن موقعك',
-                  style: const TextStyle(
+                  '${stadium.distanceKm!.toStringAsFixed(1)} كم عن موقعك الحالي',
+                  style: TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF757575),
-                    fontWeight: FontWeight.w500,
+                    color: Colors.black.withValues(alpha: 0.5),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 24),
           ],
 
-          const SizedBox(height: 16),
-          const Divider(height: 1, color: Color(0xFFEEEEEE)),
-          const SizedBox(height: 16),
+          const Divider(height: 1, color: Color(0xFFF0F0F0)),
+          const SizedBox(height: 24),
 
-          // ── Action buttons row ─────────────────────────────────────
+          // ── Action Buttons Row ─────────────────────────────────────
           Row(
             children: [
               _ActionButton(
-                icon: Icons.location_on,
-                label: stadium.distanceKm != null
-                    ? 'الموقع\n${stadium.distanceKm!.toStringAsFixed(1)} كم عنك'
-                    : 'افتح\nالموقع',
+                icon: Icons.location_on_rounded,
+                label: 'الموقع',
                 backgroundColor: const Color(0xFFFFEBEE),
                 iconColor: const Color(0xFFE53935),
                 onTap: () => _openLocation(context, stadium),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               _ActionButton(
-                icon: Icons.phone,
-                label: 'اتصال\n${_displayPhone(stadium)}',
+                icon: Icons.phone_rounded,
+                label: 'اتصال',
                 backgroundColor: const Color(0xFFE8F5E9),
                 iconColor: const Color(0xFF2E7D32),
                 onTap: () => _callPhone(context, stadium),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               _ActionButton(
-                icon: Icons.group,
-                label: 'عدد اللاعبين\n${stadium.size ?? '–'}',
+                icon: Icons.group_rounded,
+                label: stadium.size ?? 'متاح',
                 backgroundColor: const Color(0xFFE3F2FD),
                 iconColor: const Color(0xFF1565C0),
                 onTap: () {},

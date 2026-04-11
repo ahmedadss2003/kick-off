@@ -17,12 +17,12 @@ class CustomNavBar extends StatelessWidget {
         iconData = Icons.home_rounded;
         break;
       case 'profile':
-        iconData = Icons.person;
+        iconData = Icons.person_rounded;
         break;
       default:
-        iconData = Icons.error;
+        iconData = Icons.error_outline_rounded;
     }
-    return Icon(iconData, color: color, size: size);
+    return Icon(iconData, color: color, size: size ?? 24);
   }
 }
 
@@ -39,64 +39,75 @@ class NavItem {
   void Function()? onTap;
 }
 
-// ignore: must_be_immutable
 class NavBar extends StatelessWidget {
-  NavBar({
+  final int selectedIndex;
+  final Color color;
+  final List<NavItem> navItems;
+
+  const NavBar({
     super.key,
     this.selectedIndex = 0,
     required this.navItems,
     this.color = AppColors.teal,
   });
-  final int selectedIndex;
-  final Color color;
-  final List<NavItem> navItems;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.grey,
-      child: Flex(
-        direction: Axis.horizontal,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(bottom: 30, top: 10),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(200),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-              children: List.generate(navItems.length, (index) {
-                final isSelected = index == selectedIndex;
-                return Material(
-                  color: Colors.transparent,
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.hardEdge,
-                  child: InkWell(
-                    onTap: navItems[index].onTap,
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      width: 51.68,
-                      height: 51.68,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? color.withAlpha(26)
-                            : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
-                      child: isSelected
-                          ? navItems[index].selectedIcon
-                          : navItems[index].icon,
-                    ),
-                  ),
-                );
-              }),
-            ),
+      color: Colors.transparent,
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Center(
+        child: Container(
+          width: (navItems.length * 100.0) + 16,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+              BoxShadow(
+                color: AppColors.teal.withValues(alpha: 0.02),
+                blurRadius: 4,
+                spreadRadius: 2,
+              ),
+            ],
           ),
-        ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(navItems.length, (index) {
+              final isSelected = index == selectedIndex;
+              return GestureDetector(
+                onTap: navItems[index].onTap,
+                behavior: HitTestBehavior.opaque,
+                child: SizedBox(
+                  width: 90,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 8),
+                      isSelected ? navItems[index].selectedIcon : navItems[index].icon,
+                      const SizedBox(height: 6),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: isSelected ? 18 : 0,
+                        height: 3.5,
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
       ),
     );
   }

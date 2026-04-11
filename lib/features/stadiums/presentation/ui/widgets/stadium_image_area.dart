@@ -11,7 +11,7 @@ class StadiumImageArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       child: Stack(
         children: [
           // ── Image / placeholder (square thumb — fits 3-column grid) ─

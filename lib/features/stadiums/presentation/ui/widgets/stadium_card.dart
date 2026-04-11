@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kickoff/core/routes_manager/routes.dart';
+import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/widgets/stadium_image_area.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/widgets/stadium_info_row.dart';
@@ -35,12 +36,17 @@ class StadiumCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
 
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+              BoxShadow(
+                color: AppColors.teal.withValues(alpha: 0.03),
+                blurRadius: 1,
+                spreadRadius: 1,
               ),
             ],
           ),

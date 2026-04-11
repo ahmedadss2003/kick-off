@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 
-/// Horizontal row of amenity chips for a stadium.
-/// Infers amenities from the stadium data (parking, 24/7, sport type).
 class StadiumAmenitiesRow extends StatelessWidget {
   final StadiumModel stadium;
 
@@ -18,15 +17,15 @@ class StadiumAmenitiesRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -34,7 +33,6 @@ class StadiumAmenitiesRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _AmenityChip(
-            icon: 'P',
             iconLabel: 'P',
             label: 'موقف\nسيارات',
             backgroundColor: const Color(0xFFFFF8E1),
@@ -52,8 +50,8 @@ class StadiumAmenitiesRow extends StatelessWidget {
           _AmenityChip(
             label: 'كرة قدم',
             backgroundColor: const Color(0xFFE8F5E9),
-            iconColor: const Color(0xFF2E7D32),
-            iconData: Icons.sports_soccer,
+            iconColor: AppColors.teal,
+            iconData: Icons.sports_soccer_rounded,
           ),
         ],
       ),
@@ -67,7 +65,6 @@ class _AmenityChip extends StatelessWidget {
   final Color iconColor;
   final IconData? iconData;
   final String? iconLabel;
-  final String? icon;
   final bool isText;
 
   const _AmenityChip({
@@ -76,7 +73,6 @@ class _AmenityChip extends StatelessWidget {
     required this.iconColor,
     this.iconData,
     this.iconLabel,
-    this.icon,
     this.isText = false,
   });
 
@@ -85,30 +81,35 @@ class _AmenityChip extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 52,
-          height: 52,
+          width: 56,
+          height: 56,
           decoration: BoxDecoration(
             color: backgroundColor,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Center(
             child: isText
                 ? Text(
                     iconLabel ?? '',
                     style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
                       color: iconColor,
                     ),
                   )
-                : Icon(iconData, color: iconColor, size: 26),
+                : Icon(iconData, color: iconColor, size: 28),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 10),
         Text(
           label,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 11, color: Color(0xFF424242)),
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.black.withValues(alpha: 0.7),
+            fontWeight: FontWeight.w600,
+            height: 1.2,
+          ),
         ),
       ],
     );

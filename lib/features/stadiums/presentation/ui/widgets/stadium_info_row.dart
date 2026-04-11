@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 
 /// The bottom section of StadiumCard: name, price, and distance chips.
@@ -10,42 +11,42 @@ class StadiumInfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end, // RTL: right-align
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // ── Stadium name ─────────────────────────────────────────────
           Text(
             stadium.name ?? 'ملعب',
             style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
               color: Color(0xFF1A1A1A),
               height: 1.2,
             ),
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textDirection: TextDirection.rtl,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
 
-          // ── Chips (wrap — avoids overflow in 3-column grid) ───────────
+          // ── Chips ────────────────────────────────────────────────────
           Wrap(
-            spacing: 4,
-            runSpacing: 4,
+            spacing: 6,
+            runSpacing: 6,
             alignment: WrapAlignment.end,
             textDirection: TextDirection.rtl,
             children: [
               _Chip(
-                label: '${stadium.price?.toInt() ?? 0} EGP/Hour',
-                backgroundColor: const Color(0xFFE8F5E9),
-                textColor: const Color(0xFF2E7D32),
+                label: '${stadium.price?.toInt() ?? 0} EGP/ساعة',
+                backgroundColor: AppColors.teal.withValues(alpha: 0.08),
+                textColor: AppColors.teal,
               ),
               if (stadium.distanceKm != null)
                 _Chip(
                   label: '${stadium.distanceKm!.toStringAsFixed(1)} كم',
-                  backgroundColor: const Color(0xFFF5F5F5),
-                  textColor: Colors.red,
+                  backgroundColor: AppColors.yellow.withValues(alpha: 0.1),
+                  textColor: AppColors.yellow,
                 ),
             ],
           ),
@@ -70,17 +71,21 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: textColor.withValues(alpha: 0.1),
+          width: 1,
+        ),
       ),
       child: Text(
         label,
         style: TextStyle(
           color: textColor,
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

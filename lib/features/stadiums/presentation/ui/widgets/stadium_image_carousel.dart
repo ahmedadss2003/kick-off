@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 
-/// Image carousel at the top of StadiumDetailsScreen.
-/// Shows a PageView of images with dot indicators.
 class StadiumImageCarousel extends StatefulWidget {
   final StadiumModel stadium;
 
@@ -30,18 +29,37 @@ class _StadiumImageCarouselState extends State<StadiumImageCarousel> {
       children: [
         // ── PageView ─────────────────────────────────────────────────
         SizedBox(
-          height: 280,
+          height: 320,
           child: _images.isEmpty
               ? _buildPlaceholder()
               : PageView.builder(
                   controller: _controller,
                   itemCount: _images.length,
                   onPageChanged: (i) => setState(() => _currentPage = i),
-                  itemBuilder: (_, i) => Image.network(
-                    _images[i],
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  itemBuilder: (_, i) => Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(
+                        _images[i],
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.3),
+                              Colors.transparent,
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.6),
+                            ],
+                            stops: const [0.0, 0.2, 0.7, 1.0],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
         ),
@@ -49,7 +67,7 @@ class _StadiumImageCarouselState extends State<StadiumImageCarousel> {
         // ── Dot indicators (bottom center) ──────────────────────────
         if (_images.length > 1)
           Positioned(
-            bottom: 12,
+            bottom: 24,
             left: 0,
             right: 0,
             child: Row(
@@ -57,14 +75,14 @@ class _StadiumImageCarouselState extends State<StadiumImageCarousel> {
               children: List.generate(
                 _images.length,
                 (i) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: i == _currentPage ? 20 : 8,
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: i == _currentPage ? 24 : 8,
                   height: 8,
                   decoration: BoxDecoration(
                     color: i == _currentPage
-                        ? const Color(0xFF2E7D32)
-                        : Colors.white.withValues(alpha: 0.5),
+                        ? AppColors.teal
+                        : Colors.white.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -72,33 +90,37 @@ class _StadiumImageCarouselState extends State<StadiumImageCarousel> {
             ),
           ),
 
-        // ── Next arrow (right side) ──────────────────────────────────
-        if (_images.length > 1)
+        // ── Navigation Arrows ─────────────────────────────────────────
+        if (_images.length > 1) ...[
           Positioned(
-            right: 12,
+            right: 16,
             top: 0,
             bottom: 0,
             child: Center(
-              child: GestureDetector(
+              child: _ArrowButton(
+                icon: Icons.arrow_forward_ios_rounded,
                 onTap: () => _controller.nextPage(
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                 ),
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.75),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                    color: Colors.black87,
-                  ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 16,
+            top: 0,
+            bottom: 0,
+            child: Center(
+              child: _ArrowButton(
+                icon: Icons.arrow_back_ios_new_rounded,
+                onTap: () => _controller.previousPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
                 ),
               ),
             ),
           ),
+        ],
       ],
     );
   }
@@ -107,7 +129,37 @@ class _StadiumImageCarouselState extends State<StadiumImageCarousel> {
     return Container(
       color: const Color(0xFFE8F5E9),
       child: const Center(
-        child: Icon(Icons.sports_soccer, size: 80, color: Color(0xFF2E7D32)),
+        child: Icon(Icons.sports_soccer, size: 80, color: AppColors.teal),
+      ),
+    );
+  }
+}
+
+class _ArrowButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ArrowButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.2),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Icon(
+          icon,
+          size: 18,
+          color: Colors.white,
+        ),
       ),
     );
   }

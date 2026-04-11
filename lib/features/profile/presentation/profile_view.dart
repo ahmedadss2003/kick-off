@@ -11,10 +11,6 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          ProfileCubit(ProfileRepo(ProfileService(Dio())))..getProfile(),
-      child: ProfileViewBody(),
-    );
+    return ProfileViewBody();
   }
 }
