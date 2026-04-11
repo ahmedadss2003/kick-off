@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
 import 'package:kickoff/core/databases/api/end_points.dart';
 import 'package:kickoff/core/utils/app_session.dart';
+import 'package:kickoff/features/profile/data/models/user_profile_model.dart';
 
 class UpdateProfileService {
   static final DioConsumer _dioConsumer = DioConsumer(dio: Dio());
@@ -11,18 +12,17 @@ class UpdateProfileService {
   static Future<String> updateProfileImage({
     required File imageFile,
     required String name,
-    required String email,
     required String mobileNumber,
   }) async {
-    final response = await _dioConsumer.patch(
+    final response = await _dioConsumer.post(
       EndPoints.updateProfile,
       data: {
+        '_method': 'PATCH',
         'image': await MultipartFile.fromFile(
           imageFile.path,
-          filename: imageFile.path.split('/').last,
+          filename: imageFile.path.split(RegExp(r'[\\/]')).last,
         ),
         'name': name,
-        'email': email,
         'mobile_number': mobileNumber,
       },
       isFormData: true,

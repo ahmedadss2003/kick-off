@@ -17,7 +17,7 @@ class ProfileService {
         },
       ),
     );
-
+    print(response.data);
     return response.data;
   }
 }

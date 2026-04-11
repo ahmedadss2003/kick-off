@@ -66,7 +66,6 @@ class _EditProfileViewState extends State<EditProfileView> {
       final newUrl = await UpdateProfileService.updateProfileImage(
         imageFile: _pickedImage!,
         name: _nameController.text.trim(),
-        email: _emailController.text.trim(),
         mobileNumber: _phoneController.text.trim(),
       );
 

@@ -80,7 +80,6 @@ handleDioException(DioException e) {
     case DioExceptionType.badResponse:
       switch (e.response?.statusCode) {
         case 400: // Bad request
-
           throw BadResponseException(ErrorModel.fromJson(e.response!.data));
 
         case 401: //unauthorized
@@ -92,14 +91,36 @@ handleDioException(DioException e) {
         case 404: //not found
           throw NotFoundException(ErrorModel.fromJson(e.response!.data));
 
-        case 409: //cofficient
-
+        case 409: //conflict
           throw CofficientException(ErrorModel.fromJson(e.response!.data));
 
-        case 504: // Bad request
+        case 422: // Unprocessable Entity (Laravel validation errors)
+          final data = e.response!.data;
+          // Extract first validation message if available
+          String message = 'Validation error';
+          if (data is Map) {
+            if (data['errors'] is Map) {
+              final errors = data['errors'] as Map;
+              if (errors.isNotEmpty) {
+                final firstList = errors.values.first;
+                if (firstList is List && firstList.isNotEmpty) {
+                  message = firstList.first.toString();
+                }
+              }
+            } else if (data['message'] != null) {
+              message = data['message'].toString();
+            }
+          }
+          throw BadResponseException(ErrorModel(errorMessage: message));
 
+        case 504: // Gateway timeout
           throw BadResponseException(
             ErrorModel(errorMessage: e.response!.data),
+          );
+
+        default:
+          throw BadResponseException(
+            ErrorModel(errorMessage: 'Server error: ${e.response?.statusCode}'),
           );
       }
 

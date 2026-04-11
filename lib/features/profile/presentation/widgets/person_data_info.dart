@@ -43,11 +43,10 @@ class _PersonalDataInfoState extends State<PersonalDataInfo> {
       final newUrl = await UpdateProfileService.updateProfileImage(
         imageFile: _pickedImage!,
         name: widget.user.name,
-        email: widget.user.email,
+        // email: widget.user.email,
         mobileNumber: widget.user.mobileNumber,
       );
 
-      // Update the displayed URL with fresh one from API
       setState(() => _currentImageUrl = newUrl);
 
       if (mounted) {
@@ -83,98 +82,131 @@ class _PersonalDataInfoState extends State<PersonalDataInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Card(
-        elevation: 1,
-        shadowColor: Colors.white,
-        color: const Color.fromARGB(255, 221, 221, 221),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
+    return Column(
+      children: [
+        Center(
+          child: Stack(
             children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.grey.shade300,
-                    backgroundImage: _resolveImage(),
-                  ),
-                  if (_isUploading)
-                    const Positioned.fill(
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.black45,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      ),
-                    ),
-                  if (!_isUploading)
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: _pickAndUploadImage,
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                          child: const Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                            size: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                widget.user.name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.phone, color: Colors.black, size: 18),
-                  const SizedBox(width: 5),
-                  Text(
-                    widget.user.mobileNumber,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
               Container(
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 109, 109, 109),
-                  borderRadius: BorderRadius.circular(20),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(
-                    widget.user.email,
-                    style: const TextStyle(color: Colors.white),
+                child: CircleAvatar(
+                  radius: 55,
+                  backgroundColor: Colors.white,
+                  child: CircleAvatar(
+                    radius: 52,
+                    backgroundColor: Colors.grey.shade100,
+                    backgroundImage: _resolveImage(),
                   ),
                 ),
               ),
+              if (_isUploading)
+                const Positioned.fill(
+                  child: CircleAvatar(
+                    radius: 55,
+                    backgroundColor: Colors.black26,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
+                    ),
+                  ),
+                ),
+              if (!_isUploading)
+                Positioned(
+                  bottom: 2,
+                  right: 2,
+                  child: GestureDetector(
+                    onTap: _pickAndUploadImage,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.camera_alt,
+                        color: Colors.blue,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
+        const SizedBox(height: 16),
+        Text(
+          widget.user.name,
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: [
+            _buildInfoChip(
+              icon: Icons.alternate_email,
+              label: widget.user.email,
+              color: Colors.blue.withOpacity(0.1),
+              iconColor: Colors.blue,
+            ),
+            _buildInfoChip(
+              icon: Icons.phone_android,
+              label: widget.user.mobileNumber,
+              color: Colors.green.withOpacity(0.1),
+              iconColor: Colors.green,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoChip({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required Color iconColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: iconColor),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              color: iconColor.withOpacity(0.8),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

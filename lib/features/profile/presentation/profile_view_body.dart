@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:kickoff/core/theming/colors.dart';
 import 'package:kickoff/features/profile/manager/profile_cubit.dart';
 import 'package:kickoff/features/profile/presentation/widgets/lang_section.dart';
 import 'package:kickoff/features/profile/presentation/widgets/person_data_info.dart';
 import 'package:kickoff/features/profile/presentation/widgets/support_section.dart';
-import 'package:kickoff/features/profile/presentation/edit_profile_view.dart';
-import 'package:kickoff/core/theming/colors.dart';
 
 class ProfileViewBody extends StatelessWidget {
   const ProfileViewBody({super.key});
@@ -15,8 +14,6 @@ class ProfileViewBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileCubit, ProfileState>(
       buildWhen: (previous, current) {
-        // Only rebuild if it's a success, loading, or failure.
-        // We handle dialogs in BlocListener if needed, but here we just want to avoid rebuilding on delete loading so UI doesn't vanish.
         return current is ProfileSuccess ||
             current is ProfileLoading ||
             current is ProfileFailure;
@@ -29,77 +26,151 @@ class ProfileViewBody extends StatelessWidget {
         if (state is ProfileSuccess ||
             (context.read<ProfileCubit>().state is! ProfileLoading &&
                 state is! ProfileFailure)) {
-          // ensure we have user
-          final user = state is ProfileSuccess
-              ? state.user
-              : null; // Fallback: wait for success.
+          final user = state is ProfileSuccess ? state.user : null;
 
           if (user == null) return const SizedBox();
           final userToDisplay = user;
 
-          return SingleChildScrollView(
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 16),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Profile',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        // IconButton(
-                        //   onPressed: () {
-                        //     Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //         builder: (_) => BlocProvider.value(
-                        //           value: context.read<ProfileCubit>(),
-                        //           child: EditProfileView(user: userToDisplay),
-                        //         ),
-                        //       ),
-                        //     );
-                        //   },
-                        //   icon: const Icon(Icons.edit_note, color: ColorsManager.mainColor, size: 28),
-                        // ),
+          return Scaffold(
+            backgroundColor: const Color(0xFFF9FAFB),
+            body: Stack(
+              children: [
+                // Header Gradient
+                Container(
+                  height: 220,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        ColorsManager.mainColor,
+                        ColorsManager.mainColor.withOpacity(0.8),
                       ],
-                    ).animate().fade(duration: 400.ms).slideY(begin: -0.2, end: 0),
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                      bottomRight: Radius.circular(40),
+                    ),
+                  ),
+                ),
 
-                    const SizedBox(height: 8),
+                Positioned(
+                  top: -50,
+                  right: -50,
+                  child: Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
 
-                    PersonalDataInfo(user: userToDisplay)
-                        .animate()
-                        .fade(delay: 200.ms)
-                        .scale(
-                          begin: const Offset(0.9, 0.9),
-                          end: const Offset(1, 1),
+                CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverAppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      centerTitle: true,
+                      pinned: true,
+                      title: const Text(
+                        'Profile',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
                         ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
 
-                    const SizedBox(height: 16),
+                            // Main Profile Card
+                            Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 30,
+                                    horizontal: 20,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(28),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: PersonalDataInfo(user: userToDisplay),
+                                )
+                                .animate()
+                                .fade(duration: 500.ms)
+                                .slideY(begin: 0.1, end: 0),
 
-                    const LangSection()
-                        .animate()
-                        .fade(delay: 400.ms)
-                        .slideX(begin: 0.1, end: 0),
+                            const SizedBox(height: 30),
 
-                    const SizedBox(height: 16),
+                            // Settings Section Header
+                            const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Account Settings',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF1F2937),
+                                    ),
+                                  ),
+                                )
+                                .animate()
+                                .fade(delay: 200.ms)
+                                .slideX(begin: -0.1, end: 0),
 
-                    const SupportAndLogoutSection()
-                        .animate()
-                        .fade(delay: 500.ms)
-                        .slideX(begin: -0.1, end: 0),
+                            const SizedBox(height: 16),
 
-                    const SizedBox(height: 30),
+                            // Settings Group
+                            Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(24),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.03),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Column(
+                                    children: [
+                                      LangSection(),
+                                      Divider(
+                                        height: 1,
+                                        indent: 20,
+                                        endIndent: 20,
+                                      ),
+                                      SupportAndLogoutSection(),
+                                    ],
+                                  ),
+                                )
+                                .animate()
+                                .fade(delay: 400.ms)
+                                .slideY(begin: 0.1, end: 0),
+
+                            const SizedBox(height: 40),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ),
+              ],
             ),
           );
         }

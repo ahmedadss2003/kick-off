@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
 import 'package:kickoff/core/databases/api/end_points.dart';
 import 'package:kickoff/core/databases/cache/cache_helper.dart';
