@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/utils/app_colors.dart';
 
 class MarkingImageScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class _MarkingImageScreenState extends State<MarkingImageScreen> {
       children: [
         CarouselSlider(
           options: CarouselOptions(
-            height: 180.0,
+            height: 180.h,
             autoPlay: true,
             enlargeCenterPage: true,
             autoPlayCurve: Curves.fastOutSlowIn,
@@ -60,9 +61,9 @@ class _MarkingImageScreenState extends State<MarkingImageScreen> {
               builder: (BuildContext context) {
                 return Container(
                   width: MediaQuery.of(context).size.width,
-                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                  margin: EdgeInsets.symmetric(horizontal: 4.w),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(24.r),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.15),
@@ -72,7 +73,7 @@ class _MarkingImageScreenState extends State<MarkingImageScreen> {
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(24.r),
                     child: Stack(
                       children: [
                         Image.asset(
@@ -94,9 +95,9 @@ class _MarkingImageScreenState extends State<MarkingImageScreen> {
                           ),
                         ),
                         Positioned(
-                          bottom: 20,
-                          right: 20,
-                          left: 20,
+                          bottom: 20.h,
+                          right: 20.w,
+                          left: 20.w,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -128,17 +129,17 @@ class _MarkingImageScreenState extends State<MarkingImageScreen> {
             );
           }).toList(),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: marketingItems.asMap().entries.map((entry) {
             return AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: _currentIndex == entry.key ? 24.0 : 8.0,
-              height: 8.0,
-              margin: const EdgeInsets.symmetric(horizontal: 4.0),
+              width: _currentIndex == entry.key ? 24.w : 8.w,
+              height: 8.h,
+              margin: EdgeInsets.symmetric(horizontal: 4.w),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(4.r),
                 color: _currentIndex == entry.key
                     ? AppColors.teal
                     : AppColors.teal.withValues(alpha: 0.3),

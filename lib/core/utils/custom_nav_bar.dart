@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/utils/app_colors.dart';
 
 class CustomNavBar extends StatelessWidget {
@@ -22,7 +23,7 @@ class CustomNavBar extends StatelessWidget {
       default:
         iconData = Icons.error_outline_rounded;
     }
-    return Icon(iconData, color: color, size: size ?? 24);
+    return Icon(iconData, color: color, size: size?.sp ?? 24.sp);
   }
 }
 
@@ -55,24 +56,24 @@ class NavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: EdgeInsets.only(bottom: 24.h),
       child: Center(
         child: Container(
-          width: (navItems.length * 100.0) + 16,
-          height: 60,
+          width: ((navItems.length * 100.0) + 16).w,
+          height: 60.h,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(24.r),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                blurRadius: 20.r,
+                offset: Offset(0, 8.h),
               ),
               BoxShadow(
                 color: AppColors.teal.withValues(alpha: 0.02),
-                blurRadius: 4,
-                spreadRadius: 2,
+                blurRadius: 4.r,
+                spreadRadius: 2.r,
               ),
             ],
           ),
@@ -84,23 +85,23 @@ class NavBar extends StatelessWidget {
                 onTap: navItems[index].onTap,
                 behavior: HitTestBehavior.opaque,
                 child: SizedBox(
-                  width: 90,
+                  width: 90.w,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       isSelected ? navItems[index].selectedIcon : navItems[index].icon,
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6.h),
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
-                        width: isSelected ? 18 : 0,
-                        height: 3.5,
+                        width: isSelected ? 18.w : 0.w,
+                        height: 3.5.h,
                         decoration: BoxDecoration(
                           color: color,
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(2.r),
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4.h),
                     ],
                   ),
                 ),

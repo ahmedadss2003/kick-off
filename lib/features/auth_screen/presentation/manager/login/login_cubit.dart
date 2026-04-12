@@ -18,7 +18,7 @@ class LoginCubit extends Cubit<LoginState> {
       emit(LoginSuccess(user));
       log('API Response: $user');
     } on ServerException catch (e) {
-      final message = e.errorModel.errorMessage;
+      final message = _mapErrorMessage(e.errorModel.errorMessage);
       emit(LoginFailure(message));
       log(message);
     } catch (e) {
@@ -34,12 +34,23 @@ class LoginCubit extends Cubit<LoginState> {
       emit(LoginSuccess(user));
       log('API Response: $user');
     } on ServerException catch (e) {
-      final message = e.errorModel.errorMessage;
+      final message = _mapErrorMessage(e.errorModel.errorMessage);
       emit(LoginFailure(message));
       log(message);
     } catch (e) {
       emit(LoginFailure(e.toString()));
       log(e.toString());
     }
+  }
+
+  String _mapErrorMessage(String message) {
+    final lowerMessage = message.toLowerCase();
+    if (lowerMessage.contains('invalid') ||
+        lowerMessage.contains('not valid') ||
+        lowerMessage.contains('credinals') ||
+        lowerMessage.contains('credentials')) {
+      return 'Incorrect email or password. Please try again.';
+    }
+    return message;
   }
 }

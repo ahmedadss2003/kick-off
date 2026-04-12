@@ -18,15 +18,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      child: MaterialApp(
-        onGenerateRoute: RouteGenerator.getRoute,
-        debugShowCheckedModeBanner: false,
-        title: 'KickOff',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-        home: SplashScreen(),
-      ),
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MaterialApp(
+          onGenerateRoute: RouteGenerator.getRoute,
+          debugShowCheckedModeBanner: false,
+          title: 'KickOff',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          ),
+          home: child,
+        );
+      },
+      child: SplashScreen(),
     );
   }
 }

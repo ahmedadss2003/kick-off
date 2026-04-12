@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 
@@ -11,29 +12,29 @@ class StadiumInfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+      padding: EdgeInsets.fromLTRB(10.w, 10.h, 10.w, 12.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // ── Stadium name ─────────────────────────────────────────────
           Text(
             stadium.name ?? 'ملعب',
-            style: const TextStyle(
-              fontSize: 15,
+            style: TextStyle(
+              fontSize: 15.sp,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1A1A1A),
+              color: const Color(0xFF1A1A1A),
               height: 1.2,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textDirection: TextDirection.rtl,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
 
           // ── Chips ────────────────────────────────────────────────────
           Wrap(
-            spacing: 6,
-            runSpacing: 6,
+            spacing: 6.w,
+            runSpacing: 6.h,
             alignment: WrapAlignment.end,
             textDirection: TextDirection.rtl,
             children: [
@@ -71,10 +72,10 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
         border: Border.all(
           color: textColor.withValues(alpha: 0.1),
           width: 1,
@@ -84,7 +85,7 @@ class _Chip extends StatelessWidget {
         label,
         style: TextStyle(
           color: textColor,
-          fontSize: 11,
+          fontSize: 11.sp,
           fontWeight: FontWeight.w700,
         ),
       ),

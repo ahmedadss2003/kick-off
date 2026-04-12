@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/features/profile/manager/profile_cubit.dart';
 
@@ -19,7 +20,7 @@ class HomeHeader extends StatelessWidget {
         }
 
         return Container(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+          padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
           decoration: const BoxDecoration(
             color: Colors.white,
           ),
@@ -31,19 +32,19 @@ class HomeHeader extends StatelessWidget {
                 children: [
                   Text(
                     'أهلاً بيك، $userName 👋',
-                    style: const TextStyle(
-                      fontSize: 14,
+                    style: TextStyle(
+                      fontSize: 14.sp,
                       color: Colors.black54,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
+                  SizedBox(height: 4.h),
+                  Text(
                     'جاهز للعب؟ ⚽',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF1A1A1A),
+                      color: const Color(0xFF1A1A1A),
                       letterSpacing: -0.8,
                     ),
                   ),
@@ -62,7 +63,7 @@ class HomeHeader extends StatelessWidget {
                   ],
                 ),
                 child: CircleAvatar(
-                  radius: 26,
+                  radius: 26.r,
                   backgroundColor: AppColors.teal.withValues(alpha: 0.1),
                   backgroundImage: userImage.isNotEmpty
                       ? NetworkImage(userImage)

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
 import 'package:kickoff/core/routes_manager/routes.dart';
 import 'package:kickoff/core/utils/app_colors.dart';
@@ -44,10 +45,10 @@ class StadiumsView extends StatelessWidget {
 
               if (state is StadiumsSuccess) {
                 if (state.stadiums.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
                       'لا توجد ملاعب متاحة حالياً',
-                      style: TextStyle(color: Colors.black54, fontSize: 16),
+                      style: TextStyle(color: Colors.black54, fontSize: 16.sp),
                     ),
                   );
                 }
@@ -85,15 +86,15 @@ class _StadiumsSuccessBody extends StatelessWidget {
       onRefresh: onRefresh,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 24),
+        padding: EdgeInsets.only(bottom: 24.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const HomeHeader(),
             const MarkingImageScreen(),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+              padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 12.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -101,27 +102,27 @@ class _StadiumsSuccessBody extends StatelessWidget {
                     onPressed: () => _openAllStadiums(context),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.teal,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.arrow_back_ios_new_rounded, size: 14),
-                        SizedBox(width: 4),
+                        Icon(Icons.arrow_back_ios_new_rounded, size: 14.sp),
+                        SizedBox(width: 4.w),
                         Text(
                           'عرض الكل',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 13.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const Text(
+                  Text(
                     'استكشف الملاعب',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF1A1A1A),
                       letterSpacing: -0.5,
@@ -131,18 +132,18 @@ class _StadiumsSuccessBody extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 280,
+              height: 280.h,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
                 itemCount: stadiums.length + 1,
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                separatorBuilder: (_, __) => SizedBox(width: 10.w),
                 itemBuilder: (context, index) {
                   if (index == stadiums.length) {
                     return SizedBox();
                   }
                   return SizedBox(
-                    width: 180,
+                    width: 180.w,
 
                     child: StadiumCard(stadium: stadiums[index], index: index),
                   );
@@ -247,13 +248,13 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: const Text('إعادة المحاولة'),
+              icon: Icon(Icons.refresh, size: 20.sp),
+              label: Text('إعادة المحاولة', style: TextStyle(fontSize: 14.sp)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2E7D32),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
             ),

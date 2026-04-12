@@ -18,7 +18,6 @@ import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_auth
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_passward.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_textform.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/dont_have_account_widget.dart';
-import 'package:kickoff/features/home/home_view.dart';
 
 // ignore: must_be_immutable
 class LoginViewBody extends StatelessWidget {

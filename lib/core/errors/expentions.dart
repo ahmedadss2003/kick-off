@@ -65,34 +65,44 @@ class UnknownException extends ServerException {
 handleDioException(DioException e) {
   switch (e.type) {
     case DioExceptionType.connectionError:
-      throw ConnectionErrorException(ErrorModel.fromJson(e.response!.data));
+      throw ConnectionErrorException(ErrorModel(
+          errorMessage: e.response?.data?['message'] ?? 'Connection error'));
     case DioExceptionType.badCertificate:
-      throw BadCertificateException(ErrorModel.fromJson(e.response!.data));
+      throw BadCertificateException(ErrorModel(
+          errorMessage: e.response?.data?['message'] ?? 'Bad certificate'));
     case DioExceptionType.connectionTimeout:
-      throw ConnectionTimeoutException(ErrorModel.fromJson(e.response!.data));
+      throw ConnectionTimeoutException(ErrorModel(
+          errorMessage: e.response?.data?['message'] ?? 'Connection timeout'));
 
     case DioExceptionType.receiveTimeout:
-      throw ReceiveTimeoutException(ErrorModel.fromJson(e.response!.data));
+      throw ReceiveTimeoutException(ErrorModel(
+          errorMessage: e.response?.data?['message'] ?? 'Receive timeout'));
 
     case DioExceptionType.sendTimeout:
-      throw SendTimeoutException(ErrorModel.fromJson(e.response!.data));
+      throw SendTimeoutException(ErrorModel(
+          errorMessage: e.response?.data?['message'] ?? 'Send timeout'));
 
     case DioExceptionType.badResponse:
       switch (e.response?.statusCode) {
         case 400: // Bad request
-          throw BadResponseException(ErrorModel.fromJson(e.response!.data));
+          throw BadResponseException(ErrorModel(
+              errorMessage: e.response?.data?['message'] ?? 'Bad request'));
 
         case 401: //unauthorized
-          throw UnauthorizedException(ErrorModel.fromJson(e.response!.data));
+          throw UnauthorizedException(ErrorModel(
+              errorMessage: e.response?.data?['message'] ?? 'Unauthorized'));
 
         case 403: //forbidden
-          throw ForbiddenException(ErrorModel.fromJson(e.response!.data));
+          throw ForbiddenException(ErrorModel(
+              errorMessage: e.response?.data?['message'] ?? 'Forbidden'));
 
         case 404: //not found
-          throw NotFoundException(ErrorModel.fromJson(e.response!.data));
+          throw NotFoundException(ErrorModel(
+              errorMessage: e.response?.data?['message'] ?? 'Not found'));
 
         case 409: //conflict
-          throw CofficientException(ErrorModel.fromJson(e.response!.data));
+          throw CofficientException(ErrorModel(
+              errorMessage: e.response?.data?['message'] ?? 'Conflict'));
 
         case 422: // Unprocessable Entity (Laravel validation errors)
           final data = e.response!.data;
@@ -115,7 +125,7 @@ handleDioException(DioException e) {
 
         case 504: // Gateway timeout
           throw BadResponseException(
-            ErrorModel(errorMessage: e.response!.data),
+            ErrorModel(errorMessage: e.response?.data ?? 'Gateway timeout'),
           );
 
         default:

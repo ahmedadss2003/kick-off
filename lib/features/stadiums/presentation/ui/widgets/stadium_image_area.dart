@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/widgets/rating_badge.dart';
 
@@ -11,7 +12,7 @@ class StadiumImageArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       child: Stack(
         children: [
           // ── Image / placeholder (square thumb — fits 3-column grid) ─
@@ -28,8 +29,8 @@ class StadiumImageArea extends StatelessWidget {
 
           // ── Rating badge (top-left) ──────────────────────────────────
           Positioned(
-            top: 6,
-            left: 6,
+            top: 6.h,
+            left: 6.w,
             child: RatingBadge(rating: stadium.rating),
           ),
         ],

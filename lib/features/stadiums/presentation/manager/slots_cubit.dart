@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
 import 'package:kickoff/core/databases/api/end_points.dart';
 import 'package:kickoff/features/stadiums/data/models/slots_model.dart';
-import 'package:dio/dio.dart';
 
 // ─── States ──────────────────────────────────────────────────────────────────
 

@@ -16,6 +16,7 @@ import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_auth
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_passward.dart';
 import 'package:kickoff/features/auth_screen/presentation/ui/widgets/custom_textform.dart';
 
+// ignore: must_be_immutable
 class RegisterViewBody extends StatelessWidget {
   RegisterViewBody({super.key});
 

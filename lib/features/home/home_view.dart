@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kickoff/core/utils/app_colors.dart';
 import 'package:kickoff/core/utils/custom_nav_bar.dart';
 import 'package:kickoff/features/stadiums/presentation/ui/stadiums_view.dart';
@@ -39,7 +40,7 @@ class _HomeViewState extends State<HomeView> {
       child: Scaffold(
         body: IndexedStack(index: _currentIndex, children: _pages),
         bottomNavigationBar: SizedBox(
-          height: 84,
+          height: 84.h,
           child: NavBar(
             selectedIndex: _currentIndex,
             color: AppColors.teal,
