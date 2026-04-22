@@ -4,9 +4,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:kickoff/core/databases/api/dio_consumer.dart';
+import 'package:kickoff/features/stadiums/data/models/checkout_model.dart';
 import 'package:kickoff/features/stadiums/data/models/slots_model.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
+import 'package:kickoff/features/stadiums/presentation/manager/booking_cubit.dart';
+import 'package:kickoff/features/stadiums/presentation/manager/checkout_cubit.dart';
 import 'package:kickoff/features/stadiums/presentation/manager/slots_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BookingSheet extends StatefulWidget {
   final StadiumModel stadium;
@@ -19,168 +23,229 @@ class BookingSheet extends StatefulWidget {
 
 class _BookingSheetState extends State<BookingSheet> {
   DateTime _selectedDate = DateTime.now();
-  TimeSlot? _selectedSlot;
 
   String get _formattedDate => DateFormat('yyyy-MM-dd').format(_selectedDate);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => SlotsCubit(DioConsumer(dio: Dio()))
-        ..loadSlots(widget.stadium.id!, _formattedDate),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+              SlotsCubit(DioConsumer(dio: Dio()))
+                ..loadSlots(widget.stadium.id!, _formattedDate),
+        ),
+        BlocProvider(create: (_) => BookingCubit()),
+        BlocProvider(create: (_) => CheckoutCubit()),
+      ],
       child: Builder(
         builder: (ctx) {
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.85,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF8F9FA),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-            ),
-            child: Column(
-              children: [
-                // ── Handle ──────────────────────────────────────────
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 12),
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.circular(4),
+          return BlocListener<CheckoutCubit, CheckoutState>(
+            listener: (context, state) {
+              if (state is CheckoutSuccess) {
+                Navigator.pop(context);
+                launchUrl(
+                  Uri.parse(state.response.paymentUrl),
+                  mode: LaunchMode.externalApplication,
+                );
+              } else if (state is CheckoutFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('فشل الحجز: ${state.error}'),
+                    backgroundColor: Colors.red.shade600,
                   ),
-                ),
+                );
+              }
+            },
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.85,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF8F9FA),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              child: Column(
+                children: [
+                  // ── Handle ──────────────────────────────────────────
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
 
-                // ── Header ──────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.stadium, color: Color(0xFF2E7D32), size: 22),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          widget.stadium.name ?? 'حجز ملعب',
-                          style: const TextStyle(
-                            fontSize: 18,
+                  // ── Header ──────────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.stadium,
+                          color: Color(0xFF2E7D32),
+                          size: 22,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            widget.stadium.name ?? 'حجز ملعب',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1A1A1A),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // ── Date Picker Row ──────────────────────────────────
+                  _DateSelector(
+                    selectedDate: _selectedDate,
+                    onDateChanged: (date) {
+                      setState(() => _selectedDate = date);
+                      ctx.read<BookingCubit>().clearSlots();
+                      ctx.read<SlotsCubit>().loadSlots(
+                        widget.stadium.id!,
+                        DateFormat('yyyy-MM-dd').format(date),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // ── Legend Row ───────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'الأوقات المتاحة',
+                          style: TextStyle(
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF1A1A1A),
                           ),
                         ),
-                      ),
-                    ],
+                        const Spacer(),
+                        _Legend(color: const Color(0xFF2E7D32), label: 'متاح'),
+                        const SizedBox(width: 12),
+                        _Legend(color: Colors.grey.shade300, label: 'محجوز'),
+                      ],
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 16),
-
-                // ── Date Picker Row ──────────────────────────────────
-                _DateSelector(
-                  selectedDate: _selectedDate,
-                  onDateChanged: (date) {
-                    setState(() {
-                      _selectedDate = date;
-                      _selectedSlot = null;
-                    });
-                    ctx.read<SlotsCubit>().loadSlots(
-                          widget.stadium.id!,
-                          DateFormat('yyyy-MM-dd').format(date),
-                        );
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      const Text(
-                        'الأوقات المتاحة',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A1A1A),
-                        ),
-                      ),
-                      const Spacer(),
-                      _Legend(color: const Color(0xFF2E7D32), label: 'متاح'),
-                      const SizedBox(width: 12),
-                      _Legend(color: Colors.grey.shade300, label: 'محجوز'),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // ── Slots Grid ───────────────────────────────────────
-                Expanded(
-                  child: BlocBuilder<SlotsCubit, SlotsState>(
+                  // ── Minimum slots hint ───────────────────────────────
+                  BlocBuilder<BookingCubit, BookingState>(
                     builder: (context, state) {
-                      if (state is SlotsLoading || state is SlotsInitial) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xFF2E7D32),
-                          ),
-                        );
-                      }
-                      if (state is SlotsFailure) {
-                        return Center(
+                      final count = context
+                          .read<BookingCubit>()
+                          .selectedSlots
+                          .length;
+                      if (count > 0 && count < 2) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            'حدث خطأ في تحميل المواعيد',
-                            style: TextStyle(color: Colors.red.shade400),
-                          ),
+                            'اختر فترة أخرى على الأقل (ساعة كاملة)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.orange.shade700,
+                            ),
+                          ).animate().fadeIn(duration: 200.ms),
                         );
                       }
-                      if (state is! SlotsSuccess) return const SizedBox();
+                      return const SizedBox(height: 12);
+                    },
+                  ),
 
-                      final slots = state.response.slots;
-                      if (slots.isEmpty) {
-                        return const Center(
-                          child: Text('لا توجد مواعيد متاحة لهذا اليوم'),
-                        );
-                      }
-
-                      return GridView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          childAspectRatio: 2.2,
-                        ),
-                        itemCount: slots.length,
-                        itemBuilder: (context, i) {
-                          final slot = slots[i];
-                          final isSelected = _selectedSlot == slot;
-                          return _SlotChip(
-                            slot: slot,
-                            isSelected: isSelected,
-                            index: i,
-                            onTap: slot.available
-                                ? () => setState(() {
-                                      _selectedSlot =
-                                          isSelected ? null : slot;
-                                    })
-                                : null,
+                  // ── Slots Grid ───────────────────────────────────────
+                  Expanded(
+                    child: BlocBuilder<SlotsCubit, SlotsState>(
+                      builder: (context, state) {
+                        if (state is SlotsLoading || state is SlotsInitial) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Color(0xFF2E7D32),
+                            ),
                           );
-                        },
+                        }
+                        if (state is SlotsFailure) {
+                          return Center(
+                            child: Text(
+                              'حدث خطأ في تحميل المواعيد',
+                              style: TextStyle(color: Colors.red.shade400),
+                            ),
+                          );
+                        }
+                        if (state is! SlotsSuccess) return const SizedBox();
+
+                        final slots = state.response.slots;
+                        if (slots.isEmpty) {
+                          return const Center(
+                            child: Text('لا توجد مواعيد متاحة لهذا اليوم'),
+                          );
+                        }
+
+                        return BlocBuilder<BookingCubit, BookingState>(
+                          builder: (context, bookingState) {
+                            final selectedSlots = context
+                                .read<BookingCubit>()
+                                .selectedSlots;
+                            return GridView.builder(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    mainAxisSpacing: 10,
+                                    crossAxisSpacing: 10,
+                                    childAspectRatio: 2.2,
+                                  ),
+                              itemCount: slots.length,
+                              itemBuilder: (context, i) {
+                                final slot = slots[i];
+                                final isSelected = selectedSlots.contains(slot);
+                                return _SlotChip(
+                                  slot: slot,
+                                  isSelected: isSelected,
+                                  index: i,
+                                  onTap: slot.available
+                                      ? () => context
+                                            .read<BookingCubit>()
+                                            .toggleSlot(slot)
+                                      : null,
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+
+                  // ── Confirm Button ───────────────────────────────────
+                  BlocBuilder<BookingCubit, BookingState>(
+                    builder: (context, bookingState) {
+                      final bookingCubit = context.read<BookingCubit>();
+                      return AnimatedSwitcher(
+                        duration: 300.ms,
+                        child: bookingCubit.canConfirm
+                            ? _ConfirmButton(
+                                slots: bookingCubit.selectedSlots,
+                                stadium: widget.stadium,
+                                date: _formattedDate,
+                              )
+                            : const SizedBox(height: 16),
                       );
                     },
                   ),
-                ),
-
-                // ── Confirm Button ───────────────────────────────────
-                AnimatedSwitcher(
-                  duration: 300.ms,
-                  child: _selectedSlot != null
-                      ? _ConfirmButton(
-                          slot: _selectedSlot!,
-                          stadium: widget.stadium,
-                          date: _formattedDate,
-                        )
-                      : const SizedBox(height: 16),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -215,7 +280,8 @@ class _DateSelector extends StatelessWidget {
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, i) {
           final date = dates[i];
-          final isSelected = DateFormat('yyyy-MM-dd').format(date) ==
+          final isSelected =
+              DateFormat('yyyy-MM-dd').format(date) ==
               DateFormat('yyyy-MM-dd').format(selectedDate);
 
           return GestureDetector(
@@ -258,13 +324,18 @@ class _DateSelector extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : const Color(0xFF1A1A1A),
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF1A1A1A),
                     ),
                   ),
                 ],
               ),
             ),
-          ).animate().fadeIn(delay: Duration(milliseconds: i * 30), duration: 200.ms);
+          ).animate().fadeIn(
+            delay: Duration(milliseconds: i * 30),
+            duration: 200.ms,
+          );
         },
       ),
     );
@@ -291,49 +362,49 @@ class _SlotChip extends StatelessWidget {
     final available = slot.available;
 
     return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: 200.ms,
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF2E7D32)
-              : available
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: 200.ms,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color(0xFF2E7D32)
+                  : available
                   ? Colors.white
                   : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFF2E7D32)
-                : available
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected
+                    ? const Color(0xFF2E7D32)
+                    : available
                     ? const Color(0xFF2E7D32).withOpacity(0.3)
                     : Colors.grey.shade300,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF2E7D32).withOpacity(0.25),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  ),
-                ]
-              : [],
-        ),
-        child: Center(
-          child: Text(
-            '${slot.start} - ${slot.end}',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: isSelected
-                  ? Colors.white
-                  : available
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFF2E7D32).withOpacity(0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ]
+                  : [],
+            ),
+            child: Center(
+              child: Text(
+                '${slot.start} - ${slot.end}',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected
+                      ? Colors.white
+                      : available
                       ? const Color(0xFF2E7D32)
                       : Colors.grey.shade400,
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    )
+        )
         .animate()
         .fadeIn(
           delay: Duration(milliseconds: index * 25),
@@ -366,7 +437,10 @@ class _Legend extends StatelessWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 4),
-        Text(label, style: const TextStyle(fontSize: 11, color: Colors.black54)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, color: Colors.black54),
+        ),
       ],
     );
   }
@@ -375,60 +449,86 @@ class _Legend extends StatelessWidget {
 // ─── Confirm Button ───────────────────────────────────────────────────────────
 
 class _ConfirmButton extends StatelessWidget {
-  final TimeSlot slot;
+  final List<TimeSlot> slots;
   final StadiumModel stadium;
   final String date;
 
   const _ConfirmButton({
-    required this.slot,
+    required this.slots,
     required this.stadium,
     required this.date,
   });
 
   @override
   Widget build(BuildContext context) {
+    final sortedSlots = List<TimeSlot>.from(slots)
+      ..sort((a, b) => a.start.compareTo(b.start));
+    final firstSlot = sortedSlots.first;
+    final lastSlot = sortedSlots.last;
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      child: SizedBox(
-        width: double.infinity,
-        height: 54,
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'تم الحجز بنجاح: ${stadium.name} • $date • ${slot.start} - ${slot.end}',
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: BlocBuilder<CheckoutCubit, CheckoutState>(
+            builder: (context, checkoutState) {
+              final isLoading = checkoutState is CheckoutLoading;
+
+              return SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          context.read<CheckoutCubit>().checkout(
+                            CheckoutRequest(
+                              fieldId: stadium.id!,
+                              userId:
+                                  1, // replace with AppSession.userId when available
+                              date: date,
+                              startTime: firstSlot.start,
+                              endTime: lastSlot.end,
+                            ),
+                          );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2E7D32),
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: const Color(
+                      0xFF2E7D32,
+                    ).withOpacity(0.6),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.check_circle_outline, size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              'تأكيد الحجز • ${firstSlot.start} - ${lastSlot.end}',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
-                backgroundColor: const Color(0xFF2E7D32),
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2E7D32),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 0,
+              );
+            },
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.check_circle_outline, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                'تأكيد الحجز • ${slot.start} - ${slot.end}',
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    )
+        )
         .animate()
         .fadeIn(duration: 250.ms)
         .slideY(begin: 0.3, duration: 250.ms, curve: Curves.easeOut);

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:kickoff/core/databases/api/api_consumer.dart';
 import 'package:kickoff/core/databases/api/end_points.dart';
+import 'package:kickoff/features/stadiums/data/models/checkout_model.dart';
 import 'package:kickoff/features/stadiums/data/models/field_details_response.dart';
 import 'package:kickoff/features/stadiums/data/models/stadium_model.dart';
 import 'package:kickoff/features/stadiums/data/models/stadiums_response.dart';
@@ -222,4 +223,24 @@ class StadiumRepository {
 
     return AddReplyResponse.fromJson(json);
   }
+
+  Future<CheckoutResponse> checkout(CheckoutRequest request) async {
+    log('[StadiumRepository] checkout: ${EndPoints.checkout} body=${request.toJson()}');
+    final response = await apiConsumer.post(
+      EndPoints.checkout,
+      data: request.toJson(),
+    );
+
+    if (response == null) {
+      throw Exception('Failed to checkout: Server returned no data');
+    }
+
+    final Map<String, dynamic> json = response is String
+        ? (jsonDecode(response) as Map<String, dynamic>)
+        : response as Map<String, dynamic>;
+
+    log('[StadiumRepository] checkout response: $json');
+    return CheckoutResponse.fromJson(json);
+  }
 }
+

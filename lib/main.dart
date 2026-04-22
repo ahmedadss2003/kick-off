@@ -7,6 +7,7 @@ import 'package:kickoff/features/splash_screen/spalsh_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
+  //  await NotificationService.init();
   // DioClient.init();
   await ScreenUtil.ensureScreenSize();
   runApp(const MyApp());

@@ -32,4 +32,6 @@ class EndPoints {
 
   static String getSlots(int fieldId, String date) =>
       "fields/$fieldId/slots?date=$date";
+
+  static const String checkout = "checkout";
 }
